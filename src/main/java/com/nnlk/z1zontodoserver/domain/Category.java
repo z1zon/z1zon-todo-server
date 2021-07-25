@@ -8,7 +8,7 @@ import javax.persistence.Id;
 
 @Entity
 @Getter
-public class Category {
+public class Category extends BaseTime{
 
     @Id
     @GeneratedValue

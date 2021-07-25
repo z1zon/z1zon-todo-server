@@ -23,5 +23,4 @@ public class BaseTime {
     private LocalDateTime updatedAt;
 
 
-
 }
