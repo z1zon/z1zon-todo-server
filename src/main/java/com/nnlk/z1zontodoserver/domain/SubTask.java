@@ -1,10 +1,14 @@
 package com.nnlk.z1zontodoserver.domain;
 
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
+@Builder
+@NoArgsConstructor
 @Getter
 public class SubTask extends BaseTime {
 
@@ -16,6 +20,10 @@ public class SubTask extends BaseTime {
 
     @Enumerated(EnumType.STRING)
     private TaskStatus taskStatus;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "taskId")
+    private Task task;
 
 
 

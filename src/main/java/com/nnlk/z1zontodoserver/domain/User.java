@@ -1,7 +1,9 @@
 package com.nnlk.z1zontodoserver.domain;
 
 
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
@@ -10,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Builder
+@NoArgsConstructor
 @Getter
 public class User extends BaseTime {
 
@@ -31,7 +35,7 @@ public class User extends BaseTime {
     @OneToMany(mappedBy = "user")
     private List<Task> tasks = new ArrayList<>();
 
-    @OneToMany()
+    @OneToMany(mappedBy = "user")
     private List<Category> categories = new ArrayList<>();
 
 }
