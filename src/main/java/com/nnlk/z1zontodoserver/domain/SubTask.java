@@ -1,14 +1,16 @@
 package com.nnlk.z1zontodoserver.domain;
 
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
+@Builder
+@NoArgsConstructor
 @Getter
-public class SubTask {
+public class SubTask extends BaseTime {
 
     @Id
     @GeneratedValue
@@ -16,7 +18,13 @@ public class SubTask {
 
     private String content;
 
+    @Enumerated(EnumType.STRING)
     private TaskStatus taskStatus;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "taskId")
+    private Task task;
+
 
 
 }
