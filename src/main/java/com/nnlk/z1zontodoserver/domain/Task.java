@@ -1,5 +1,6 @@
 package com.nnlk.z1zontodoserver.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,10 +12,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+
+@Getter
 @Builder
 @NoArgsConstructor
-@Getter
+@AllArgsConstructor
+@Entity
+@Table(name = "Task")
 public class Task extends BaseTime {
 
     @Id
@@ -24,7 +28,6 @@ public class Task extends BaseTime {
     @NotNull
     private String content;
 
-    @ColumnDefault("#000000")
     private String color;
 
     private Integer importance;
@@ -37,15 +40,14 @@ public class Task extends BaseTime {
     private LocalDateTime endAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoryId")
     private Category category;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    private User user;
+
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
     private List<SubTask> subTasks = new ArrayList<>();
-
 
 }

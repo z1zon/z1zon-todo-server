@@ -1,15 +1,18 @@
 package com.nnlk.z1zontodoserver.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Entity
+
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
+@Entity
 public class SubTask extends BaseTime {
 
     @Id
@@ -24,7 +27,5 @@ public class SubTask extends BaseTime {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "taskId")
     private Task task;
-
-
 
 }

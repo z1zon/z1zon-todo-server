@@ -1,6 +1,7 @@
 package com.nnlk.z1zontodoserver.domain;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,10 +12,11 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+@Getter
 @Builder
 @NoArgsConstructor
-@Getter
+@AllArgsConstructor
+@Entity
 public class User extends BaseTime {
 
     @Id
@@ -29,7 +31,6 @@ public class User extends BaseTime {
     @NotNull
     private String email;
 
-    @ColumnDefault("local")
     private String provider;
 
     @OneToMany(mappedBy = "user")
