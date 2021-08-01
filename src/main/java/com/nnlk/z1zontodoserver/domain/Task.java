@@ -18,7 +18,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Task")
 public class Task extends BaseTime {
 
     @Id
@@ -28,6 +27,7 @@ public class Task extends BaseTime {
     @NotNull
     private String content;
 
+    @Column(nullable = false, columnDefinition = "varchar(100) default '#000000'")
     private String color;
 
     private Integer importance;

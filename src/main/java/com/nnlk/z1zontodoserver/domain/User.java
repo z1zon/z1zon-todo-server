@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -31,6 +30,7 @@ public class User extends BaseTime {
     @NotNull
     private String email;
 
+    @Column(columnDefinition = "varchar(255) default 'local' ")
     private String provider;
 
     @OneToMany(mappedBy = "user")
