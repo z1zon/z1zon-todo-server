@@ -12,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -38,17 +37,14 @@ public class TaskRepositoryTest {
                 Task.builder()
                 .content("content")
                 .endAt(localDateTime)
-                .startAt(localDateTime.minusDays(10))
+                .startAt(localDateTime)
                 .importance(Integer.valueOf(10))
                 .build());
-        Task task = taskRepository.findById(1L).orElse(null);
-        System.out.println(Optional.ofNullable(task.getColor()).orElse("999999"));
-        System.out.println(task.getId());
-        System.out.println(task.getEndAt());
-        System.out.println(task.getEndAt());
-        Assert.assertTrue(task.getCreatedAt().compareTo(localDateTime)>0);
-        Assert.assertTrue(task.getUpdatedAt().compareTo(localDateTime)>0);
 
+        Task task = taskRepository.findById(1L).orElse(null);
+        Assert.assertTrue(task.getCreatedAt().isAfter(localDateTime));
+        Assert.assertTrue(task.getUpdatedAt().isAfter(localDateTime));
+        Assert.assertTrue("#000000".equals(task.getColor()));
 
     }
 }
