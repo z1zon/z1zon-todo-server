@@ -1,0 +1,29 @@
+#springdoc:
+#  swagger-ui:
+#    path: /swagger-ui.html
+#
+#spring:
+#  datasource:
+#    url: #url
+#    username: #username
+#    password: #password
+#    driver-class-name: org.h2.Driver
+#  jpa:
+#    database-platform: org.hibernate.dialect.H2Dialect
+#    hibernate:
+#      generate-ddl: true
+#      ddl-auto: create
+#      show-sql: true
+#      naming:
+#        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+#      properties:
+#        hibernate:
+#          format_sql: true
+#
+#    # H2 Settings
+#  h2:
+#    console:
+#      enabled: true
+#      path: /h2
+#
+#
