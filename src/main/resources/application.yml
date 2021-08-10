@@ -2,14 +2,6 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
-  jpa:
-    hibernate:
-      ddl-auto: create
-      show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-
 spring:
   datasource:
     url: jdbc:h2:mem:default
@@ -18,6 +10,16 @@ spring:
     driver-class-name: org.h2.Driver
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      generate-ddl: true
+      ddl-auto: create
+      show-sql: true
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl  #myEmail my_email 어떤걸로 만들어질까?
+      properties:
+        hibernate:
+          format_sql: true
+
     # H2 Settings
   h2:
     console:

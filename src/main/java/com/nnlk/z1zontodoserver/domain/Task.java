@@ -1,20 +1,25 @@
 package com.nnlk.z1zontodoserver.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-@Entity
+
+@Getter
 @Builder
 @NoArgsConstructor
-@Getter
+@AllArgsConstructor
+@Entity
 public class Task extends BaseTime {
 
     @Id
@@ -24,7 +29,7 @@ public class Task extends BaseTime {
     @NotNull
     private String content;
 
-    @ColumnDefault("#000000")
+    @Column
     private String color;
 
     private Integer importance;
@@ -37,15 +42,22 @@ public class Task extends BaseTime {
     private LocalDateTime endAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoryId")
     private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    private User user;
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
     private List<SubTask> subTasks = new ArrayList<>();
 
+    /**
+     * insert 되기전(persist 되기 전) 실행된다.
+     */
+    @PrePersist
+    public void perPersist(){
+        this.color = Optional.ofNullable(this.color).orElse("#000000");
+    }
 
 }
