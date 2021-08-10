@@ -11,7 +11,7 @@ import org.springframework.security.web.header.writers.frameoptions.XFrameOption
 import java.util.Arrays;
 
 @Configuration
-@EnableWebSecurity // 필터 등록해서 controller로 들어오는 요청 필터링
+@EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
@@ -26,7 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .headers()
                 .addHeaderWriter(
                         new XFrameOptionsHeaderWriter(
-                                new WhiteListedAllowFromStrategy(Arrays.asList("localhost"))    // 여기!
+                                new WhiteListedAllowFromStrategy(Arrays.asList("localhost"))
                         )
                 )
                 .frameOptions().sameOrigin();
