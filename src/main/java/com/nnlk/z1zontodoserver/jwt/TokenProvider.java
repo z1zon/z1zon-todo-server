@@ -1,32 +1,29 @@
 package com.nnlk.z1zontodoserver.jwt;
 
+import com.nnlk.z1zontodoserver.service.UserService;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.InitializingBean;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.Base64;
 import java.util.Date;
-import java.util.stream.Collectors;
 
 @Component
-public class TokenProvider implements InitializingBean {
+public class TokenProvider{
 
     private static final String AUTHORITIES_KEY = "auth";
 
-    private final String secret;
+    private UserService userService;
+    private String secret;
     private final long tokenValidityInMilliseconds;
-
-    private Key key;
 
 
     public TokenProvider(
@@ -35,51 +32,40 @@ public class TokenProvider implements InitializingBean {
         this.secret = secret;
         this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000;
     }
-    /*
-    * Todo 알아보기 왜 굳이 객체를 다 로딩 한 후 키를 로딩할까? 그냥 생성자에 넣으면 안되는걸까?
-    */
-    @Override
-    public void afterPropertiesSet() {
-        byte[] keyBytes = secret.getBytes();
-        this.key = Keys.hmacShaKeyFor(keyBytes);
+    @PostConstruct
+    protected void init() {
+        secret = Base64.getEncoder().encodeToString(secret.getBytes());
     }
 
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
     /*
     * createToken 메소드는 Authentication 객체에 포함되어 있는 권한 정보들을 담은 토큰을 생성
     * jwt.token-validity-in-seconds 값을 이용해 토큰의 만료 시간을 지정합니다.
     */
-    public String createToken(Authentication authentication) {
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-
-        long now = (new Date()).getTime();
-        Date validity = new Date(now + this.tokenValidityInMilliseconds);
-
+    public String createToken(String userPk) {
+        Claims claims = Jwts.claims().setSubject(userPk);
+        Date now = new Date();
         return Jwts.builder()
-                .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, authorities)
-                .signWith(key, SignatureAlgorithm.HS512)
-                .setExpiration(validity)
+                .setClaims(claims) // 정보 저장
+                .setIssuedAt(now) // 토큰 발행 시간 정보
+                .setExpiration(new Date(now.getTime() + tokenValidityInMilliseconds)) // set Expire Time
+                .signWith(SignatureAlgorithm.HS256, secret)  // 사용할 암호화 알고리즘과
+                // signature 에 들어갈 secret값 세팅
                 .compact();
     }
 
+    // JWT 토큰에서 인증 정보 조회
     public Authentication getAuthentication(String token) {
-        Claims claims = Jwts
-                .parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        UserDetails userDetails = userService.loadUserByUsername(this.getUserPk(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
 
-        Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
-
-        User principal = new User(claims.getSubject(), "", authorities);
-
-        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+    // 토큰에서 회원 정보 추출
+    public String getUserPk(String token) {
+        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
     }
     /*
     * Todo 로거 사용 협의 후 sout 교체
@@ -87,7 +73,7 @@ public class TokenProvider implements InitializingBean {
     */
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(secret).build().parseClaimsJws(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             System.out.println("잘못된 JWT 서명입니다.");
@@ -103,5 +89,10 @@ public class TokenProvider implements InitializingBean {
             //logger.info("JWT 토큰이 잘못되었습니다.");
         }
         return false;
+    }
+
+    // Request의 Header에서 token 값을 가져옵니다. "X-AUTH-TOKEN" : "TOKEN값'
+    public String resolveToken(HttpServletRequest request) {
+        return request.getHeader("X-AUTH-TOKEN");
     }
 }

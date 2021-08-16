@@ -26,6 +26,8 @@ dependencies {
     // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui
     implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.5.9'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-webmvc-core', version: '1.5.9'
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
     annotationProcessor 'org.projectlombok:lombok'

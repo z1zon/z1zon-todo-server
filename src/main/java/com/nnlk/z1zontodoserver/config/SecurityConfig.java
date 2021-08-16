@@ -1,9 +1,6 @@
 package com.nnlk.z1zontodoserver.config;
 
-import com.nnlk.z1zontodoserver.jwt.JwtAccessDeniedHandler;
-import com.nnlk.z1zontodoserver.jwt.JwtAuthenticationEntryPoint;
-import com.nnlk.z1zontodoserver.jwt.JwtSecurityConfig;
-import com.nnlk.z1zontodoserver.jwt.TokenProvider;
+import com.nnlk.z1zontodoserver.jwt.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,10 +12,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.frameoptions.WhiteListedAllowFromStrategy;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -27,73 +26,48 @@ import java.util.Arrays;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final TokenProvider tokenProvider;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    //private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    //private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    /*
-     * 보안 예외처리, 정작 리소스
-     */
+
     @Override
-    public void configure(WebSecurity web) {
-        web
-                .ignoring()
-                .antMatchers(
-                        "/h2/**"
-                );
+    /*
+    * Todo 여기 처리한 h2는 먹히는데 ... 밑에 http에 처리만 해놓으면 안먹네 why?
+    * */
+    public void configure(WebSecurity web) throws Exception {
+
+        web.ignoring().antMatchers("/v3/api-docs/**", "/configuration/ui/**", "/swagger-ui/**",
+                "/swagger-resources/**", "/configuration/security/**",
+                "/swagger-ui.html", "/webjars/**", "/swagger/**", "/h2/**");
     }
 
     /**
      * 보안처
+     *
      * @param http
      * @throws Exception
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        http.authorizeRequests()
-//                .antMatchers("/**").permitAll()
-//                .anyRequest().authenticated()
-//                .and()
-//                .csrf()
-//                .ignoringAntMatchers("/h2/**") //h2 csrf 처리
-//                .and()
-//                .headers()
-//                .addHeaderWriter(
-//                        new XFrameOptionsHeaderWriter(
-//                                new WhiteListedAllowFromStrategy(Arrays.asList("localhost"))
-//                        )
-//                )
-//                .frameOptions().sameOrigin();
+
         http
+                .httpBasic().disable()
                 .csrf().disable()
-
-                .exceptionHandling()
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                .accessDeniedHandler(jwtAccessDeniedHandler)
-
-                .and()
-                .headers()
-                .frameOptions()
-                .sameOrigin()
-
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/hello").permitAll()
-                .antMatchers("/api/authenticate").permitAll()
-                .antMatchers("/api/signup").permitAll()
+                .antMatchers("/auth/**").permitAll()
+                .antMatchers("/user/**").permitAll()
+                .antMatchers("/h2/**").permitAll()
                 .anyRequest().authenticated()
-
                 .and()
-                .apply(new JwtSecurityConfig(tokenProvider));
-
-
-
+                .addFilterBefore(new JwtFilter(tokenProvider),
+                        UsernamePasswordAuthenticationFilter.class);
     }
+
+
 }

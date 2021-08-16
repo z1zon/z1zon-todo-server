@@ -35,28 +35,16 @@ public class JwtFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        String jwt = resolveToken(httpServletRequest);
-        String requestURI = httpServletRequest.getRequestURI();
-
-        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-            Authentication authentication = tokenProvider.getAuthentication(jwt);
+        // 헤더에서 JWT 를 받아옵니다.
+        String token = tokenProvider.resolveToken((HttpServletRequest) servletRequest);
+        // 유효한 토큰인지 확인합니다.
+        if (token != null && tokenProvider.validateToken(token)) {
+            // 토큰이 유효하면 토큰으로부터 유저 정보를 받아옵니다.
+            Authentication authentication = tokenProvider.getAuthentication(token);
+            // SecurityContext 에 Authentication 객체를 저장합니다.
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            //logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
-        } else {
-            //logger.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
         }
-
         filterChain.doFilter(servletRequest, servletResponse);
     }
-    /*
-    * resolveToken 메소드는 HttpServletRequest 객체의 Header에서 token을 꺼내는 역할을 수행합니다.
-    * */
-    private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
-    }
+
 }
