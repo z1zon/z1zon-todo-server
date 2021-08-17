@@ -46,7 +46,7 @@ public class User extends BaseTime implements UserDetails {
      * insert 되기전(persist 되기 전) 실행된다.
      */
     @PrePersist
-    public void perPersist(){
+    public void perPersist() {
         this.provider = Optional.ofNullable(this.provider).orElse("local");
         this.role = Optional.ofNullable(this.role).orElse("public");
     }
@@ -100,4 +100,10 @@ public class User extends BaseTime implements UserDetails {
     public boolean isEnabled() {
         return false;
     }
+
+    public void encryptPwd(String encPwd){
+        this.password = encPwd;
+    }
+
+
 }

@@ -23,18 +23,9 @@ public class TestController {
         return "test success";
     }
 
-    @GetMapping("/auth/test")
-    private String createTokenTest() {
+    @GetMapping("/test")
+    private String authTest() {
 
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken("askdfjaslfa","12341234");
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String jwt = tokenProvider.createToken("askdfjaslfa");
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
-
-        return jwt;
+        return "auth success";
     }
 }
