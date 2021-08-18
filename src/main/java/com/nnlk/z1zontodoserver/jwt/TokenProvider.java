@@ -1,8 +1,7 @@
 package com.nnlk.z1zontodoserver.jwt;
 
-import com.nnlk.z1zontodoserver.service.UserService;
+import com.nnlk.z1zontodoserver.service.AuthService;
 import io.jsonwebtoken.*;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,7 +12,6 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 
@@ -24,7 +22,7 @@ public class TokenProvider{
 
     private static final String AUTHORITIES_KEY = "auth";
 
-    private UserService userService;
+    private AuthService authService;
     private String secret;
     private final long tokenValidityInMilliseconds;
 
@@ -41,8 +39,8 @@ public class TokenProvider{
     }
 
     @Autowired
-    public void setUserService(UserService userService) {
-        this.userService = userService;
+    public void setUserService(AuthService authService) {
+        this.authService = authService;
     }
     /*
     * createToken 메소드는 Authentication 객체에 포함되어 있는 권한 정보들을 담은 토큰을 생성
@@ -62,7 +60,7 @@ public class TokenProvider{
 
     // JWT 토큰에서 인증 정보 조회
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = userService.loadUserByUsername(this.getUserPk(token));
+        UserDetails userDetails = authService.loadUserByUsername(this.getUserPk(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 

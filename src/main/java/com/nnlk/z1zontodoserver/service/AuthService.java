@@ -6,8 +6,7 @@ import com.nnlk.z1zontodoserver.dto.user.UserLoginDto;
 import com.nnlk.z1zontodoserver.jwt.TokenProvider;
 import com.nnlk.z1zontodoserver.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,44 +19,59 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
 
 
 @AllArgsConstructor
 @Service
-public class UserService implements UserDetailsService {
+public class AuthService implements UserDetailsService {
 
     private UserRepository userRepository;
     private TokenProvider tokenProvider;
 
     @Transactional
-    public void register(UserCreateDto userCreatseDto) {
-        User user = userCreatseDto.toEntity();
-        user.encryptPwd(getSHA256Pwd(userCreatseDto.getPassword()));
+    public void register(UserCreateDto userCreateDto) {
+        validateDuplicateUser(userCreateDto.getEmail());
+
+        User user = userCreateDto.toEntity();
+        user.encryptPwd(getSHA256Pwd(userCreateDto.getPassword()));
+
         userRepository.save(user);
     }
 
-    public String login(UserLoginDto userLoginDto){
-        String userName = userLoginDto.getName();
+    public String login(UserLoginDto userLoginDto) {
+        String email = userLoginDto.getEmail();
         String encPwd = getSHA256Pwd(userLoginDto.getPassword());
-        User user = (User) loadUserByUsername(userName);
-        if(!encPwd.equals(user.getPassword())){
+        User user = (User) loadUserByUsername(email);
+        if (!encPwd.equals(user.getPassword())) {
             throw new IllegalArgumentException();
         }
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userName,encPwd);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(email, encPwd);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = tokenProvider.createToken(userName);
+        String token = tokenProvider.createToken(email);
 
         return token;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
-        return userRepository.findByName(name)
-                .orElseThrow(
-                        () -> new UsernameNotFoundException("사용자를 찾을 수 없습니다.")
-                );
+    public UserDetails loadUserByUsername(String email){
+        User user = userRepository.findByEmail(email);
+        System.out.println(user.toString());
+
+        if(user == null){
+            throw  new UsernameNotFoundException("유저 이름을 찾을 수 없습니다.");
+        }
+        return user;
     }
-    public String getSHA256Pwd(String rawPwd){
+
+    private void validateDuplicateUser(String email){
+        User user = userRepository.findByEmail(email);
+        if(user != null){
+            throw new DuplicateKeyException("이미 사용중인 이메일 입니다.");
+        }
+    }
+
+    public String getSHA256Pwd(String rawPwd) {
         MessageDigest md = null;
         try {
             md = MessageDigest.getInstance("SHA-256");
@@ -68,7 +82,6 @@ public class UserService implements UserDetailsService {
         String hashedPwd = String.format("%064x", new BigInteger(1, md.digest()));
         return hashedPwd;
     }
-
 
 
 }

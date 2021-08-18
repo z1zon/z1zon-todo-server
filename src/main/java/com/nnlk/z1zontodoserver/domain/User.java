@@ -1,6 +1,5 @@
 package com.nnlk.z1zontodoserver.domain;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -78,7 +77,7 @@ public class User extends BaseTime implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.name;
+        return this.email;
     }
 
     @Override
