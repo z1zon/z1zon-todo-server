@@ -15,7 +15,7 @@ spring:
       ddl-auto: update
       show-sql: true
       naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl  #myEmail my_email 어떤걸로 만들어질까?
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
       properties:
         hibernate:
           format_sql: true
