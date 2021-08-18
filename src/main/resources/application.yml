@@ -12,7 +12,7 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       generate-ddl: true
-      ddl-auto: create
+      ddl-auto: update
       show-sql: true
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
@@ -25,5 +25,4 @@ spring:
     console:
       enabled: true
       path: /h2
-
 
