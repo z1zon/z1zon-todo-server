@@ -40,4 +40,4 @@ out/
 **/application-local.yml
 **/application-release.yml
 
-
+**/logs/
