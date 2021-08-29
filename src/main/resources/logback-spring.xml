@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property name="APPLICATION" value="zizon-todo"/>
+
+    <springProfile name="local">
+        <property name="LOG_FILE_PATH" value="logs"/>
+        <property name="LOG_ARCHIVE_PATH" value="logs"/>
+    </springProfile>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- file appender -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE_PATH}/${APPLICATION}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${LOG_ARCHIVE_PATH}/%d{yyyy,aux}/%d{MM,aux}/%d{dd,aux}/${APPLICATION}.log.%d{yyyyMMdd}.%i.gz
+            </fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- file appender -->
+    <appender name="STDERR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE_PATH}/${APPLICATION}.stderr.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${LOG_ARCHIVE_PATH}/%d{yyyy,aux}/%d{MM,aux}/%d{dd,aux}/${APPLICATION}.stderr.log.%d{yyyyMMdd}.%i.gz
+            </fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- file appender -->
+    <appender name="STDOUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE_PATH}/${APPLICATION}.stdout.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${LOG_ARCHIVE_PATH}/%d{yyyy,aux}/%d{MM,aux}/%d{dd,aux}/${APPLICATION}.stdout.log.%d{yyyyMMdd}.%i.gz
+            </fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- io file appender -->
+    <appender name="IO-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE_PATH}/${APPLICATION}.io_log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${LOG_ARCHIVE_PATH}/%d{yyyy,aux}/%d{MM,aux}/%d{dd,aux}/${APPLICATION}.io_log.%d{yyyyMMdd}.%i.gz
+            </fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <springProfile name="local">
+        <!--com.nnlk.z1zontodoserver 하위 경로의 모든 Logger level 은 Debug -->
+        <!--additivity false 설정으로 인해 com.nnlk.z1zontodoserver 의 FILE, CONSOLE 이름을 가진 곳에 만 로그 적용-->
+        <logger name="com.nnlk.z1zontodoserver" level="DEBUG" additivity="false">
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+
+        <logger name="i/o" level="DEBUG" additivity="false">
+            <appender-ref ref="IO-FILE"/>
+        </logger>
+
+        <logger name="stdout" level="INFO" additivity="false">
+            <appender-ref ref="STDOUT"/>
+        </logger>
+
+        <logger name="stderr" level="ERROR" additivity="false">
+            <appender-ref ref="STDERR"/>
+        </logger>
+
+        <root level="DEBUG">
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+</configuration>
