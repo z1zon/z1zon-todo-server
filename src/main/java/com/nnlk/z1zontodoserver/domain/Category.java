@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Entity
-public class Category extends BaseTime{
+public class Category extends BaseTime {
 
     @Id
     @GeneratedValue
