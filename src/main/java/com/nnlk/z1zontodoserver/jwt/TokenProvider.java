@@ -2,6 +2,8 @@ package com.nnlk.z1zontodoserver.jwt;
 
 import com.nnlk.z1zontodoserver.service.AuthService;
 import io.jsonwebtoken.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,6 +21,8 @@ import static com.nnlk.z1zontodoserver.jwt.JwtFilter.AUTHORIZATION_HEADER;
 
 @Component
 public class TokenProvider{
+
+    static final Logger log = LoggerFactory.getLogger(TokenProvider.class);
 
     private static final String AUTHORITIES_KEY = "auth";
 
@@ -77,17 +81,21 @@ public class TokenProvider{
             Jwts.parserBuilder().setSigningKey(secret).build().parseClaimsJws(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            System.out.println("잘못된 JWT 서명입니다.");
-            //logger.info("잘못된 JWT 서명입니다.");
+            if(log.isErrorEnabled()){
+                log.error("잘못된 JWT 서명입니다.");
+            }
         } catch (ExpiredJwtException e) {
-            System.out.println("만료된 JWT 토큰입니다.");
-            //logger.info("만료된 JWT 토큰입니다.");
+            if(log.isErrorEnabled()){
+                log.error("만료된 JWT 토큰입니다.");
+            }
         } catch (UnsupportedJwtException e) {
-            System.out.println("지원되지 않는 JWT 토큰입니다.");
-            //logger.info("지원되지 않는 JWT 토큰입니다.");
+            if(log.isErrorEnabled()){
+                log.error("지원되지 않는 JWT 토큰입니다.");
+            }
         } catch (IllegalArgumentException e) {
-            System.out.println("JWT 토큰이 잘못되었습니다.");
-            //logger.info("JWT 토큰이 잘못되었습니다.");
+            if(log.isErrorEnabled()){
+                log.info("JWT 토큰이 잘못되었습니다.");
+            }
         }
         return false;
     }

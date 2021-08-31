@@ -30,4 +30,13 @@ public class UserCreateDto {
                     .build();
     }
 
+    @Override
+    public String toString() {
+        return "UserCreateDto{" +
+                "name='" + name + '\'' +
+                ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
 }

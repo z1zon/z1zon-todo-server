@@ -28,4 +28,13 @@ public class SubTask extends BaseTime {
     @JoinColumn(name = "taskId")
     private Task task;
 
+    @Override
+    public String toString() {
+        return "SubTask{" +
+                "id=" + id +
+                ", content='" + content + '\'' +
+                ", taskStatus=" + taskStatus +
+                ", task=" + task.toString() +
+                '}';
+    }
 }

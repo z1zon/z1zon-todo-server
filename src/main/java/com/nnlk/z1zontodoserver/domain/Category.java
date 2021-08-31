@@ -28,5 +28,13 @@ public class Category extends BaseTime {
     @OneToMany(mappedBy = "category")
     private List<Task> task = new ArrayList<>();
 
-
+    @Override
+    public String toString() {
+        return "Category{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", user=" + user.toString() +
+                ", task=" + task.toString() +
+                '}';
+    }
 }

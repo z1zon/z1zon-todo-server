@@ -6,6 +6,8 @@ import com.nnlk.z1zontodoserver.dto.user.UserLoginDto;
 import com.nnlk.z1zontodoserver.jwt.TokenProvider;
 import com.nnlk.z1zontodoserver.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,13 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Optional;
 
 
 @AllArgsConstructor
 @Service
 public class AuthService implements UserDetailsService {
 
+    static final Logger log = LoggerFactory.getLogger(AuthService.class);
     private UserRepository userRepository;
     private TokenProvider tokenProvider;
 
@@ -56,9 +58,10 @@ public class AuthService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email){
         User user = userRepository.findByEmail(email);
-        System.out.println(user.toString());
-
         if(user == null){
+            if(log.isErrorEnabled()){
+                log.error("   ---> 유저 이름을 찾을 수 없습니다.{}",user);
+            }
             throw  new UsernameNotFoundException("유저 이름을 찾을 수 없습니다.");
         }
         return user;
@@ -67,6 +70,9 @@ public class AuthService implements UserDetailsService {
     private void validateDuplicateUser(String email){
         User user = userRepository.findByEmail(email);
         if(user != null){
+            if(log.isErrorEnabled()){
+                log.error("   ---> 이미 사용중인 이메일 입니다.{}",user);
+            }
             throw new DuplicateKeyException("이미 사용중인 이메일 입니다.");
         }
     }

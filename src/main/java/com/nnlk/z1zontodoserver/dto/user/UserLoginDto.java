@@ -12,4 +12,12 @@ public class UserLoginDto {
     private String email;
     @NotNull(message = "password는 필수 값 입니다.")
     private String password;
+
+    @Override
+    public String toString() {
+        return "UserLoginDto{" +
+                "email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }
