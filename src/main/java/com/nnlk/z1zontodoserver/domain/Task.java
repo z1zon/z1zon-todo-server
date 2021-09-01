@@ -58,4 +58,19 @@ public class Task extends BaseTime {
         this.color = Optional.ofNullable(this.color).orElse("#000000");
     }
 
+    @Override
+    public String toString() {
+        return "Task{" +
+                "id=" + id +
+                ", content='" + content + '\'' +
+                ", color='" + color + '\'' +
+                ", importance=" + importance +
+                ", taskStatus=" + taskStatus +
+                ", startAt=" + startAt +
+                ", endAt=" + endAt +
+                ", category=" + category.toString() +
+                ", user=" + user.toString() +
+                ", subTasks=" + subTasks.toString() +
+                '}';
+    }
 }

@@ -8,4 +8,5 @@ import lombok.*;
 public class ResponseDto<T> {
     int status;
     T data;
+
 }
