@@ -6,8 +6,7 @@ import com.nnlk.z1zontodoserver.dto.user.UserLoginDto;
 import com.nnlk.z1zontodoserver.jwt.TokenProvider;
 import com.nnlk.z1zontodoserver.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,9 +24,9 @@ import java.security.NoSuchAlgorithmException;
 
 @AllArgsConstructor
 @Service
+@Slf4j
 public class AuthService implements UserDetailsService {
 
-    static final Logger log = LoggerFactory.getLogger(AuthService.class);
     private UserRepository userRepository;
     private TokenProvider tokenProvider;
 

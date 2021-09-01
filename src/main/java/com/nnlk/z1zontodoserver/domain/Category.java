@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Entity
+@ToString
 public class Category extends BaseTime {
 
     @Id
@@ -28,13 +30,4 @@ public class Category extends BaseTime {
     @OneToMany(mappedBy = "category")
     private List<Task> task = new ArrayList<>();
 
-    @Override
-    public String toString() {
-        return "Category{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", user=" + user.toString() +
-                ", task=" + task.toString() +
-                '}';
-    }
 }
