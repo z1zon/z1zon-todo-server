@@ -1,9 +1,6 @@
 package com.nnlk.z1zontodoserver.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -13,6 +10,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Entity
+@ToString
 public class SubTask extends BaseTime {
 
     @Id
@@ -28,13 +26,4 @@ public class SubTask extends BaseTime {
     @JoinColumn(name = "taskId")
     private Task task;
 
-    @Override
-    public String toString() {
-        return "SubTask{" +
-                "id=" + id +
-                ", content='" + content + '\'' +
-                ", taskStatus=" + taskStatus +
-                ", task=" + task.toString() +
-                '}';
-    }
 }

@@ -1,9 +1,6 @@
 package com.nnlk.z1zontodoserver.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,6 +14,7 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@ToString
 public class User extends BaseTime implements UserDetails {
 
     @Id
@@ -104,17 +102,4 @@ public class User extends BaseTime implements UserDetails {
         this.password = encPwd;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", password='" + password + '\'' +
-                ", role='" + role + '\'' +
-                ", email='" + email + '\'' +
-                ", provider='" + provider + '\'' +
-                ", tasks=" + tasks.toString() +
-                ", categories=" + categories.toString() +
-                '}';
-    }
 }

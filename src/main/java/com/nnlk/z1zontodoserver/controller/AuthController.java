@@ -4,8 +4,7 @@ import com.nnlk.z1zontodoserver.dto.user.UserCreateDto;
 import com.nnlk.z1zontodoserver.dto.user.UserLoginDto;
 import com.nnlk.z1zontodoserver.service.AuthService;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +21,9 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api/v1/auth")
 @AllArgsConstructor
+@Slf4j
 public class AuthController {
 
-    static final Logger log = LoggerFactory.getLogger(AuthController.class);
     private AuthService authService;
 
     /*
@@ -56,7 +55,7 @@ public class AuthController {
             log.debug("   ---> 로그인 인증 시작 {}",userLoginDto);
         }
         if (errors.hasErrors()) {
-            log.info(String.format("   ---> %s", errors.getFieldError().toString()));
+            log.error(String.format("   ---> %s", errors.getFieldError().toString()));
             return new ResponseEntity<String>("wrong field", HttpStatus.BAD_REQUEST);
         }
         HttpHeaders httpHeaders = new HttpHeaders();

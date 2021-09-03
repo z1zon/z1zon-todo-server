@@ -1,9 +1,6 @@
 package com.nnlk.z1zontodoserver.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -18,6 +15,7 @@ import java.util.Optional;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@ToString
 public class Task extends BaseTime {
 
     @Id
@@ -58,19 +56,4 @@ public class Task extends BaseTime {
         this.color = Optional.ofNullable(this.color).orElse("#000000");
     }
 
-    @Override
-    public String toString() {
-        return "Task{" +
-                "id=" + id +
-                ", content='" + content + '\'' +
-                ", color='" + color + '\'' +
-                ", importance=" + importance +
-                ", taskStatus=" + taskStatus +
-                ", startAt=" + startAt +
-                ", endAt=" + endAt +
-                ", category=" + category.toString() +
-                ", user=" + user.toString() +
-                ", subTasks=" + subTasks.toString() +
-                '}';
-    }
 }

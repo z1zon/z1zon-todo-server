@@ -3,12 +3,14 @@ package com.nnlk.z1zontodoserver.dto.user;
 import com.nnlk.z1zontodoserver.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Getter
 @AllArgsConstructor
+@ToString
 public class UserCreateDto {
 
     @NotNull(message = "name은 필수 값 입니다.")
@@ -30,13 +32,4 @@ public class UserCreateDto {
                     .build();
     }
 
-    @Override
-    public String toString() {
-        return "UserCreateDto{" +
-                "name='" + name + '\'' +
-                ", password='" + password + '\'' +
-                ", role='" + role + '\'' +
-                ", email='" + email + '\'' +
-                '}';
-    }
 }
