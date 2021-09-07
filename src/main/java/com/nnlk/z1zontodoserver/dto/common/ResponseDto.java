@@ -7,8 +7,8 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 @Builder
 public class ResponseDto<T> {
-    HttpStatus status;
-    String messsage;
-    T data;
+    private HttpStatus status;
+    private String messsage;
+    private T data;
 
 }

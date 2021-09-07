@@ -26,10 +26,14 @@ dependencies {
     // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui
     implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.5.9'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-webmvc-core', version: '1.5.9'
+    // logback 1.2.5 버전 추가.
+    implementation("ch.qos.logback:logback-core:1.2.5")
+    implementation("ch.qos.logback:logback-classic:1.2.5")
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
     compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'com.h2database:h2'
+    //runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'mysql:mysql-connector-java'
     annotationProcessor 'org.projectlombok:lombok'
     // https://mvnrepository.com/artifact/junit/junit
     testImplementation group: 'junit', name: 'junit', version: '4.12'

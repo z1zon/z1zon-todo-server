@@ -2,10 +2,12 @@ package com.nnlk.z1zontodoserver.service;
 
 import com.nnlk.z1zontodoserver.domain.*;
 import com.nnlk.z1zontodoserver.dto.task.TaskCreateDto;
+import com.nnlk.z1zontodoserver.repository.CategoryRepository;
 import com.nnlk.z1zontodoserver.repository.TaskRepository;
 import com.nnlk.z1zontodoserver.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -17,38 +19,60 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class TaskService {
-
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
 
     public void createTask(Long userId, TaskCreateDto taskCreateDto) {
 
-        User user = userRepository.findById(userId).get();
+        User user = userRepository.findById(userId)
+                .orElse(null);
 
-        // 여기서 User 연관관계 설정해주고, User 객체에 필요한 값 세팅 해준다.
-        Task task = new Task();
+        List<Task> prevTasks = getPrevTasks(taskCreateDto);
+        Category category = getCategory(taskCreateDto);
 
-        // task 와 관련된 연관 관계 설정.
-        Category category = task.getCategory();
-        List<Long> prevTaskIds = taskCreateDto.getPrevIds();
-        List<Task> prevTasks = taskRepository.findAllById(prevTaskIds);
+        Task task = Task.upsert(null, user, prevTasks, category, taskCreateDto);
 
-        task.setUser(user);
-        task.addCategory(category);
-        prevTasks.stream().forEach(prevTask -> task.addPrevTask(task));
-        
-        // task 의 값 세팅.
-        task.setTaskStatus(TaskStatus.TODO);
-        task.setStartAt(taskCreateDto.getStartAt()); // not null
-        task.setEndAt(taskCreateDto.getEndAt()); // not null
-        task.setColor(taskCreateDto.getColor()); // nullable
-        task.setImportance(taskCreateDto.getImportance()); // not null
-
-        // User 객체 저장해준다.
         taskRepository.save(task);
-
-        // 리턴해준다.
-
     }
+
+    @Transactional
+    public void updateTask(User user, Long taskId, TaskCreateDto taskCreateDto) {
+        Task task = validateUserTask(user, taskId);
+        List<Task> prevTasks = getPrevTasks(taskCreateDto);
+        Category category = getCategory(taskCreateDto);
+
+        Task.upsert(task, null, prevTasks, category, taskCreateDto);
+    }
+
+    public void deleteTask(User user, Long taskId) {
+        validateUserTask(user, taskId);
+
+        taskRepository.deleteById(taskId);
+    }
+
+    /**
+     * 악의적으로 타인의 task 를 삭제할, 갱신 할 수도 있으므로
+     * 삭제, 갱신하는 task 가 현재 요청을 보낸 유저의 task 인지를 확인.
+     */
+    private Task validateUserTask(User user, Long taskId) {
+        Long userId = user.getId();
+        Task task = taskRepository.findByIdAndUserId(taskId, userId);
+
+        return Optional.ofNullable(task).orElseThrow(() -> new RuntimeException());
+    }
+
+    private List<Task> getPrevTasks(TaskCreateDto taskCreateDto) {
+        return Optional.ofNullable(taskCreateDto.getPrevIds())
+                .map(prevTaskIds -> taskRepository.findAllById(prevTaskIds))
+                .orElse(null);
+    }
+
+    private Category getCategory(TaskCreateDto taskCreateDto) {
+        return Optional.ofNullable(taskCreateDto.getCategoryId())
+                .map(categoryId -> categoryRepository.findById(categoryId).orElse(null))
+                .orElse(null);
+    }
+
 
 }
