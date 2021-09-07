@@ -15,7 +15,6 @@ import java.util.Optional;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@ToString
 public class Task extends BaseTime {
 
     @Id

@@ -14,7 +14,6 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@ToString
 public class User extends BaseTime implements UserDetails {
 
     @Id
@@ -46,6 +45,10 @@ public class User extends BaseTime implements UserDetails {
     public void perPersist() {
         this.provider = Optional.ofNullable(this.provider).orElse("local");
         this.role = Optional.ofNullable(this.role).orElse("public");
+    }
+
+    public void addCategory(List<Category> categoryList){
+        categories = categoryList;
     }
 
     /*

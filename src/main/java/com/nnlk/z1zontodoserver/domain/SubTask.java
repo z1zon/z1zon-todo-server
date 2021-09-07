@@ -10,7 +10,6 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Entity
-@ToString
 public class SubTask extends BaseTime {
 
     @Id
