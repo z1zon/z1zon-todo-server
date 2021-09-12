@@ -55,6 +55,7 @@ public class AuthService implements UserDetailsService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email){
         User user = userRepository.findByEmail(email);
         if(user == null){

@@ -4,9 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
 import java.util.Optional;
 
 
@@ -32,20 +30,17 @@ public class Task extends BaseTime {
     @Enumerated(EnumType.STRING)
     private TaskStatus taskStatus;
 
-    private LocalDateTime startAt;
+    private LocalDate startAt;
 
-    private LocalDateTime endAt;
+    private LocalDate endAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoryId")
-    private Category category;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
+    @ManyToOne()
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
-    private List<SubTask> subTasks = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     /**
      * insert 되기전(persist 되기 전) 실행된다.
@@ -53,6 +48,7 @@ public class Task extends BaseTime {
     @PrePersist
     public void perPersist() {
         this.color = Optional.ofNullable(this.color).orElse("#000000");
+        this.importance = Optional.ofNullable(this.importance).orElse(3);
     }
 
 }
