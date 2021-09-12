@@ -34,7 +34,7 @@ public class Task extends BaseTime {
 
     private LocalDate endAt;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 

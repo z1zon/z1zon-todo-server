@@ -41,10 +41,6 @@ public class User extends BaseTime implements UserDetails {
         this.role = Optional.ofNullable(this.role).orElse("public");
     }
 
-    public void addCategory(List<Category> categoryList){
-        categories = categoryList;
-    }
-
     /*
     * ------------------------------------------------------------------------------
     * UserDetails에 대한 구현, SpringSecurity는 UserDetails객체를 통해 권한정보를 관리한다.
@@ -99,4 +95,15 @@ public class User extends BaseTime implements UserDetails {
         this.password = encPwd;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
+                ", email='" + email + '\'' +
+                ", provider='" + provider + '\'' +
+                '}';
+    }
 }

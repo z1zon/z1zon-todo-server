@@ -21,7 +21,7 @@ public class SubTask extends BaseTime {
     @Enumerated(EnumType.STRING)
     private TaskStatus taskStatus;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "task_id")
     private Task task;
 

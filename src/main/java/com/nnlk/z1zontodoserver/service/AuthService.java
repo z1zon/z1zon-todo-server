@@ -36,7 +36,7 @@ public class AuthService implements UserDetailsService {
 
         User user = userCreateDto.toEntity();
         user.encryptPwd(getSHA256Pwd(userCreateDto.getPassword()));
-
+        log.debug("   ---> user {}",user);
         userRepository.save(user);
     }
 
