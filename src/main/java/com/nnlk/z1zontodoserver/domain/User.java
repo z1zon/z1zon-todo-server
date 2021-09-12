@@ -32,12 +32,6 @@ public class User extends BaseTime implements UserDetails {
 
     private String provider;
 
-    @OneToMany(mappedBy = "user")
-    private List<Task> tasks = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user")
-    private List<Category> categories = new ArrayList<>();
-
     /**
      * insert 되기전(persist 되기 전) 실행된다.
      */
@@ -97,7 +91,7 @@ public class User extends BaseTime implements UserDetails {
         return false;
     }
 
-    public void encryptPwd(String encPwd){
+    public void encryptPwd(String encPwd) {
         this.password = encPwd;
     }
 

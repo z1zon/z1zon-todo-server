@@ -28,12 +28,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    /*
-     * Todo 여기 처리한 h2는 먹히는데 ... 밑에 http에 처리만 해놓으면 안먹네 why?
-     * */
     public void configure(WebSecurity web) throws Exception {
 
-        web.ignoring().antMatchers("/v3/api-docs/**", "/configuration/ui/**", "/swagger-ui/**",
+        web.ignoring().antMatchers("/v2/api-docs/**", "/configuration/ui/**", "/swagger-ui/**",
                 "/swagger-resources/**", "/configuration/security/**",
                 "/swagger-ui.html", "/webjars/**", "/swagger/**", "/h2/**");
     }

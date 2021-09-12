@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public final ResponseEntity<Object> handleAllException(Exception ex, WebRequest webRequest){
+    public final ResponseEntity<Object> handleAllException(Exception ex, WebRequest webRequest) {
         ExceptionResponse exceptionResponse = ExceptionResponse.builder()
                 .code(500)
                 .sendMessages("INTERNER_SERVER_ERROR")
@@ -24,6 +24,19 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 
 
         return new ResponseEntity(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(NotExistObjectException.class)
+    protected ResponseEntity<Object> handleNotExistObjectException(Exception ex, WebRequest webRequest) {
+
+        ExceptionResponse exceptionResponse = ExceptionResponse.builder()
+                .code(400)
+                .sendMessages("BAD_REQUEST")
+                .message(ex.getMessage())
+                .build();
+
+        log.info(ex.getMessage());
+        return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
 
     @Override
@@ -42,7 +55,6 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         log.info(ex.getFieldError().toString());
         return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
-
 
 
 }
