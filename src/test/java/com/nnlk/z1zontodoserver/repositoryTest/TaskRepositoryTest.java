@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @RunWith(SpringRunner.class)
@@ -32,12 +34,12 @@ public class TaskRepositoryTest {
     @Test
     public void auditCreatedDate(){
         LocalDateTime localDateTime = LocalDateTime.now();
-
+        LocalDate localDate = LocalDate.now();
         testEntityManager.persist(
                 Task.builder()
                 .content("content")
-                .endAt(localDateTime)
-                .startAt(localDateTime)
+                .endAt(localDate)
+                .startAt(localDate)
                 .importance(Integer.valueOf(10))
                 .build());
 

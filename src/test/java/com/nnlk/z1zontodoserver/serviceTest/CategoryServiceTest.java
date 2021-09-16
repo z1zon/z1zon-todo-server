@@ -14,10 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class CategoryServiceTest {
@@ -35,10 +31,19 @@ public class CategoryServiceTest {
 
     @BeforeEach
     public void createTestUser() {
-        userRepository.save(User.builder()
+        User user = User.builder()
                 .name("test-user")
                 .email("test@naver.com")
                 .password("1234")
+                .build();
+        userRepository.save(user);
+        categoryRepository.save(Category.builder()
+                                .name("카테고리")
+                                .user(user)
+                                .build());
+        categoryRepository.save(Category.builder()
+                .name("카테고리2")
+                .user(user)
                 .build());
     }
 
@@ -51,14 +56,33 @@ public class CategoryServiceTest {
                 .name("test-category")
                 .user(user)
                 .build();
-        List<Category> categoryList = Optional.ofNullable(user.getCategories()).orElse(new ArrayList<>());
-        categoryList.add(category);
-        user.addCategory(categoryList);
+
         Category 카테고리 = categoryRepository.save(category);
         User 카테고리_유저 = 카테고리.getUser();
-        Assert.assertTrue("test-user".equals(카테고리_유저.getName()));
         Assert.assertTrue("test-user".equals(카테고리_유저.getName()));
         Assert.assertTrue("test-category".equals(카테고리.getName()));
 
     }
+    @DisplayName("카테고리 조회 테스트")
+    @Test
+    public void findAll(){
+        assert (categoryRepository.findAll().size() ==2);
+        assert (categoryRepository.findAll().stream().filter(category ->
+                "test@naver.com".equals(category.getUser().getEmail())).count() ==2);
+    }
+    @DisplayName("카테고리 업데이트 테스트")
+    @Test
+    public void update(){
+        categoryRepository.findAll().stream().forEach(category -> category.update("1234"));
+        categoryRepository.flush();
+        assert(categoryRepository.findAll().stream().allMatch(category -> "1234".equals(category.getName())));
+    }
+
+    @DisplayName("카테고리 삭제 테스트")
+    @Test
+    public void delete(){
+        categoryRepository.findAll().stream().forEach(categoryRepository::delete);
+        assert(categoryRepository.findAll().size()==0);
+    }
+
 }
