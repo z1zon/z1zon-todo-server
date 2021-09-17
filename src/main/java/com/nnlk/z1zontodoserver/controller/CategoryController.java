@@ -18,14 +18,14 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1")
 @AllArgsConstructor
 @Slf4j
 public class CategoryController {
 
     private final CategoryService categoryService;
 
-    @PostMapping("category")
+    @PostMapping("/category")
     private ResponseDto create(@ApiIgnore @AuthenticationPrincipal User user,
                                @RequestBody @Valid CategoryCreateRequestDto categoryCreateRequestDto) {
         categoryService.create(user, categoryCreateRequestDto);
@@ -36,7 +36,7 @@ public class CategoryController {
                 .build();
     }
 
-    @GetMapping("categories")
+    @GetMapping("/categories")
     private ResponseDto findAll(@AuthenticationPrincipal User user) {
         List<CategoryResponseDto> categoryResponseDtoList = categoryService.findAll(user);
 
@@ -47,7 +47,7 @@ public class CategoryController {
                 .build();
     }
 
-    @PostMapping("/category/update/{cateogryId}")
+    @PostMapping("/category/update/{cateogoryId}")
     public ResponseDto update(@AuthenticationPrincipal User user,
                               @Valid @RequestBody CategoryUpdateRequestDto categoryUpdateRequestDto,
                               @PathVariable Long cateogoryId){
@@ -58,7 +58,7 @@ public class CategoryController {
                 .build();
     }
 
-    @DeleteMapping("/category/{cateogryId}")
+    @DeleteMapping("/category/{cateogoryId}")
     public ResponseDto delete(@ApiIgnore @AuthenticationPrincipal User user, @PathVariable Long cateogoryId) {
         categoryService.delete(user, cateogoryId);
 

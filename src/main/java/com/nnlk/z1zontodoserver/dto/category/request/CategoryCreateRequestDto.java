@@ -5,12 +5,14 @@ import com.nnlk.z1zontodoserver.domain.User;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor //없으면 deserialization 안된다.
 public class CategoryCreateRequestDto {
     @NotNull
-    String categoryName;
+    private String categoryName;
 
     public Category toEntity(User user){
         return Category.builder()

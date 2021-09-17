@@ -11,8 +11,6 @@ public class CategoryResponseDto {
 
     private Long id;
 
-    private String name;
-
     private Long userId;
 
     private String createdAt;
