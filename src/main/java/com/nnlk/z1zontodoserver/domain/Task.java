@@ -1,5 +1,6 @@
 package com.nnlk.z1zontodoserver.domain;
 
+import com.nnlk.z1zontodoserver.dto.task.TaskResponseDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -49,6 +50,19 @@ public class Task extends BaseTime {
     public void perPersist() {
         this.color = Optional.ofNullable(this.color).orElse("#000000");
         this.importance = Optional.ofNullable(this.importance).orElse(3);
+    }
+
+    public TaskResponseDto toResponseDto() {
+        return TaskResponseDto.builder()
+                .id(this.id)
+                .category(this.category) // 해당 부분 categoryDto 변환 필요, merge 후 작업
+                .color(this.color)
+                .importance(this.importance)
+                .taskStatus(this.taskStatus)
+                .startAt(this.startAt)
+                .endAt(this.endAt)
+                .userId(this.user.getId())
+                .build();
     }
 
 }

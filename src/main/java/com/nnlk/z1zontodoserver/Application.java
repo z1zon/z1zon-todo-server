@@ -11,18 +11,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 public class Application {
 
     public static void main(String[] args) {
-        try{
+        try {
             SpringApplication.run(Application.class, args);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
-
-//    @Bean
-//    Hibernate5Module hibernate5Module(){
-//        return new Hibernate5Module();
-//    }
-
 }

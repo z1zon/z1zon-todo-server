@@ -33,8 +33,6 @@ public class TaskCreateDto {
 
     private Long categoryId;
 
-    private List<Long> prevIds;
-
     private TaskStatus taskStatus;
 
     public Task toEntity(User user, Category category) {

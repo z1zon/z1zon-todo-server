@@ -2,6 +2,7 @@ package com.nnlk.z1zontodoserver.service;
 
 import com.nnlk.z1zontodoserver.domain.*;
 import com.nnlk.z1zontodoserver.dto.task.TaskCreateDto;
+import com.nnlk.z1zontodoserver.dto.task.TaskResponseDto;
 import com.nnlk.z1zontodoserver.exception.NotExistObjectException;
 import com.nnlk.z1zontodoserver.repository.CategoryRepository;
 import com.nnlk.z1zontodoserver.repository.TaskRepository;
@@ -13,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @AllArgsConstructor
@@ -42,18 +45,18 @@ public class TaskService {
 
     }
 
-    public void deleteTask(User user, Long taskId) {
+    public void delete(User user, Long taskId) {
         validateUserTask(user, taskId);
         taskRepository.deleteById(taskId);
     }
 
-    public List<Task> findAll(User user) {
-
+    public List<TaskResponseDto> findAll(User user) {
         Long userId = user.getId();
         List<Task> tasks = taskRepository.findAllByUserId(userId);
 
-        return Optional.ofNullable(tasks).orElse(new ArrayList<>());
-
+        return tasks.stream()
+                .map(task -> task.toResponseDto())
+                .collect(toList());
     }
 
     /**
@@ -66,19 +69,4 @@ public class TaskService {
 
         return Optional.ofNullable(task).orElseThrow(() -> new NotExistObjectException("task is not exist"));
     }
-
-
-//    private List<Task> getPrevTasks(TaskCreateDto taskCreateDto) {
-//        return Optional.ofNullable(taskCreateDto.getPrevIds())
-//                .map(prevTaskIds -> taskRepository.findAllById(prevTaskIds))
-//                .orElse(null);
-//    }
-//
-//    private Category getCategory(TaskCreateDto taskCreateDto) {
-//        return Optional.ofNullable(taskCreateDto.getCategoryId())
-//                .map(categoryId -> categoryRepository.findById(categoryId).orElse(null))
-//                .orElse(null);
-//    }
-
-
 }

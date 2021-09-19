@@ -4,6 +4,7 @@ import com.nnlk.z1zontodoserver.domain.Task;
 import com.nnlk.z1zontodoserver.domain.User;
 import com.nnlk.z1zontodoserver.dto.common.ResponseDto;
 import com.nnlk.z1zontodoserver.dto.task.TaskCreateDto;
+import com.nnlk.z1zontodoserver.dto.task.TaskResponseDto;
 import com.nnlk.z1zontodoserver.repository.CategoryRepository;
 import com.nnlk.z1zontodoserver.repository.UserRepository;
 import com.nnlk.z1zontodoserver.service.TaskService;
@@ -24,8 +25,6 @@ import java.util.List;
 public class TaskController {
 
     private final TaskService taskService;
-    private final UserRepository userRepository;
-    private final CategoryRepository categoryRepository;
 
     @PostMapping("task")
     private ResponseDto create(@ApiIgnore @AuthenticationPrincipal User user,
@@ -40,7 +39,7 @@ public class TaskController {
 
     @GetMapping("/tasks")
     private ResponseDto findAll(@AuthenticationPrincipal User user) {
-        List<Task> tasks = taskService.findAll(user);
+        List<TaskResponseDto> tasks = taskService.findAll(user);
 
         return ResponseDto.builder()
                 .messsage("tasks lookup success")
@@ -54,8 +53,7 @@ public class TaskController {
                               @Valid @RequestBody TaskCreateDto taskCreateDto,
                               @PathVariable Long taskId
     ) {
-
-//        taskService.updateTask(user, taskId, taskCreateDto);
+        taskService.update(user, taskId, taskCreateDto);
 
         return ResponseDto.builder()
                 .messsage("update success")
@@ -65,13 +63,12 @@ public class TaskController {
 
     @DeleteMapping("/task/{taskId}")
     public ResponseDto delete(@ApiIgnore @AuthenticationPrincipal User user, @PathVariable Long taskId) {
-        taskService.deleteTask(user, taskId);
+        taskService.delete(user, taskId);
 
         return ResponseDto.builder()
                 .messsage("delete success")
                 .status(HttpStatus.OK)
                 .build();
     }
-
 
 }
