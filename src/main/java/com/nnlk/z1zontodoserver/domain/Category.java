@@ -1,20 +1,18 @@
 package com.nnlk.z1zontodoserver.domain;
 
+import com.nnlk.z1zontodoserver.dto.category.response.CategoryResponseDto;
 import lombok.AllArgsConstructor;
-
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Entity
-@ToString
+@Builder
 public class Category extends BaseTime {
 
     @Id
@@ -23,11 +21,22 @@ public class Category extends BaseTime {
 
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "category")
-    private List<Task> task = new ArrayList<>();
+    public CategoryResponseDto toResponseDto(){
+        return CategoryResponseDto.builder()
+                                    .id(this.id)
+                                    .categoryName(this.name)
+                                    .userId(this.user.getId())
+                                    .updatedAt(this.getUpdatedAt().toString())
+                                    .createdAt(this.getCreatedAt().toString())
+                                    .build();
+    }
+
+    public void update(String name){
+        this.name=name;
+    }
 
 }

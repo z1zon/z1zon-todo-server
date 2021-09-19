@@ -1,20 +1,24 @@
 package com.nnlk.z1zontodoserver.domain;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@ToString
 public class User extends BaseTime implements UserDetails {
 
     @Id
@@ -32,12 +36,6 @@ public class User extends BaseTime implements UserDetails {
     private String email;
 
     private String provider;
-
-    @OneToMany(mappedBy = "user")
-    private List<Task> tasks = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user")
-    private List<Category> categories = new ArrayList<>();
 
     /**
      * insert 되기전(persist 되기 전) 실행된다.
@@ -98,8 +96,19 @@ public class User extends BaseTime implements UserDetails {
         return false;
     }
 
-    public void encryptPwd(String encPwd){
+    public void encryptPwd(String encPwd) {
         this.password = encPwd;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
+                ", email='" + email + '\'' +
+                ", provider='" + provider + '\'' +
+                '}';
+    }
 }

@@ -1,8 +1,8 @@
 package com.nnlk.z1zontodoserver.service;
 
 import com.nnlk.z1zontodoserver.domain.User;
-import com.nnlk.z1zontodoserver.dto.user.UserCreateDto;
-import com.nnlk.z1zontodoserver.dto.user.UserLoginDto;
+import com.nnlk.z1zontodoserver.dto.user.request.UserLoginDto;
+import com.nnlk.z1zontodoserver.dto.user.request.UserUpsertRequestDto;
 import com.nnlk.z1zontodoserver.jwt.TokenProvider;
 import com.nnlk.z1zontodoserver.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -31,12 +31,12 @@ public class AuthService implements UserDetailsService {
     private TokenProvider tokenProvider;
 
     @Transactional
-    public void register(UserCreateDto userCreateDto) {
-        validateDuplicateUser(userCreateDto.getEmail());
+    public void register(UserUpsertRequestDto userUpsertRequestDto) {
+        validateDuplicateUser(userUpsertRequestDto.getEmail());
 
-        User user = userCreateDto.toEntity();
-        user.encryptPwd(getSHA256Pwd(userCreateDto.getPassword()));
-
+        User user = userUpsertRequestDto.toEntity();
+        user.encryptPwd(getSHA256Pwd(userUpsertRequestDto.getPassword()));
+        log.debug("   ---> user {}",user);
         userRepository.save(user);
     }
 
@@ -55,6 +55,7 @@ public class AuthService implements UserDetailsService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email){
         User user = userRepository.findByEmail(email);
         if(user == null){

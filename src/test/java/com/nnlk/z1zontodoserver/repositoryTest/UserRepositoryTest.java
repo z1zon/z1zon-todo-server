@@ -1,6 +1,5 @@
 package com.nnlk.z1zontodoserver.repositoryTest;
 
-import com.nnlk.z1zontodoserver.domain.Task;
 import com.nnlk.z1zontodoserver.domain.User;
 import com.nnlk.z1zontodoserver.repository.UserRepository;
 import org.junit.Assert;

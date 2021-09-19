@@ -10,7 +10,6 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Entity
-@ToString
 public class SubTask extends BaseTime {
 
     @Id
@@ -22,8 +21,8 @@ public class SubTask extends BaseTime {
     @Enumerated(EnumType.STRING)
     private TaskStatus taskStatus;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "taskId")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "task_id")
     private Task task;
 
 }

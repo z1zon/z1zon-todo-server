@@ -1,7 +1,7 @@
 package com.nnlk.z1zontodoserver.controller;
 
-import com.nnlk.z1zontodoserver.dto.user.UserCreateDto;
-import com.nnlk.z1zontodoserver.dto.user.UserLoginDto;
+import com.nnlk.z1zontodoserver.dto.user.request.UserLoginDto;
+import com.nnlk.z1zontodoserver.dto.user.request.UserUpsertRequestDto;
 import com.nnlk.z1zontodoserver.service.AuthService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,16 +30,12 @@ public class AuthController {
      * TODO Exception Refactoring
      * */
     @PostMapping("signup")
-    public ResponseEntity<String> save(@RequestBody @Valid UserCreateDto userCreateDto, Errors errors) {
+    public ResponseEntity<String> save(@RequestBody @Valid UserUpsertRequestDto userUpsertRequestDto, Errors errors) {
         try {
             if(log.isDebugEnabled()){
-                log.debug("   ---> 회원가입 시작 {}",userCreateDto);
+                log.debug("   ---> 회원가입 시작 {}", userUpsertRequestDto);
             }
-            if (errors.hasErrors()) {
-                log.error(String.format("   ---> %s", errors.getFieldError().toString()));
-                return new ResponseEntity<String>("wrong field", HttpStatus.BAD_REQUEST);
-            }
-            authService.register(userCreateDto);
+            authService.register(userUpsertRequestDto);
         } catch (RuntimeException e) {
             return new ResponseEntity<String>("runtime error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -53,10 +49,6 @@ public class AuthController {
     public ResponseEntity<String> login(@RequestBody @Valid UserLoginDto userLoginDto, Errors errors) {
         if(log.isDebugEnabled()){
             log.debug("   ---> 로그인 인증 시작 {}",userLoginDto);
-        }
-        if (errors.hasErrors()) {
-            log.error(String.format("   ---> %s", errors.getFieldError().toString()));
-            return new ResponseEntity<String>("wrong field", HttpStatus.BAD_REQUEST);
         }
         HttpHeaders httpHeaders = new HttpHeaders();
         try {
