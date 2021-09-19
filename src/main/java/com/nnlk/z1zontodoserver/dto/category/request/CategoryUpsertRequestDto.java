@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
-public class CategoryUpdateRequestDto {
-
+@NoArgsConstructor //없으면 deserialization 안된다.
+public class CategoryUpsertRequestDto {
     @NotNull
     private String categoryName;
 

@@ -2,8 +2,7 @@ package com.nnlk.z1zontodoserver.controller;
 
 
 import com.nnlk.z1zontodoserver.domain.User;
-import com.nnlk.z1zontodoserver.dto.category.request.CategoryCreateRequestDto;
-import com.nnlk.z1zontodoserver.dto.category.request.CategoryUpdateRequestDto;
+import com.nnlk.z1zontodoserver.dto.category.request.CategoryUpsertRequestDto;
 import com.nnlk.z1zontodoserver.dto.category.response.CategoryResponseDto;
 import com.nnlk.z1zontodoserver.dto.common.ResponseDto;
 import com.nnlk.z1zontodoserver.service.CategoryService;
@@ -27,8 +26,8 @@ public class CategoryController {
 
     @PostMapping("/category")
     private ResponseDto create(@ApiIgnore @AuthenticationPrincipal User user,
-                               @RequestBody @Valid CategoryCreateRequestDto categoryCreateRequestDto) {
-        categoryService.create(user, categoryCreateRequestDto);
+                               @RequestBody @Valid CategoryUpsertRequestDto categoryUpsertRequestDto) {
+        categoryService.create(user, categoryUpsertRequestDto);
 
         return ResponseDto.builder()
                 .status(HttpStatus.CREATED)
@@ -47,20 +46,20 @@ public class CategoryController {
                 .build();
     }
 
-    @PostMapping("/category/update/{cateogoryId}")
+    @PostMapping("/category/update/{categoryId}")
     public ResponseDto update(@AuthenticationPrincipal User user,
-                              @Valid @RequestBody CategoryUpdateRequestDto categoryUpdateRequestDto,
-                              @PathVariable Long cateogoryId){
-        categoryService.update(user, categoryUpdateRequestDto,cateogoryId);
+                              @Valid @RequestBody CategoryUpsertRequestDto categoryUpsertRequestDto,
+                              @PathVariable Long categoryId) {
+        categoryService.update(user, categoryUpsertRequestDto, categoryId);
         return ResponseDto.builder()
                 .messsage("update success")
                 .status(HttpStatus.OK)
                 .build();
     }
 
-    @DeleteMapping("/category/{cateogoryId}")
-    public ResponseDto delete(@ApiIgnore @AuthenticationPrincipal User user, @PathVariable Long cateogoryId) {
-        categoryService.delete(user, cateogoryId);
+    @DeleteMapping("/category/{categoryId}")
+    public ResponseDto delete(@ApiIgnore @AuthenticationPrincipal User user, @PathVariable Long categoryId) {
+        categoryService.delete(user, categoryId);
 
         return ResponseDto.builder()
                 .messsage("delete success")

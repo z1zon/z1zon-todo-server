@@ -1,8 +1,8 @@
 package com.nnlk.z1zontodoserver.service;
 
 import com.nnlk.z1zontodoserver.domain.User;
-import com.nnlk.z1zontodoserver.dto.user.request.UserCreateRequestDto;
 import com.nnlk.z1zontodoserver.dto.user.request.UserLoginDto;
+import com.nnlk.z1zontodoserver.dto.user.request.UserUpsertRequestDto;
 import com.nnlk.z1zontodoserver.jwt.TokenProvider;
 import com.nnlk.z1zontodoserver.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -31,11 +31,11 @@ public class AuthService implements UserDetailsService {
     private TokenProvider tokenProvider;
 
     @Transactional
-    public void register(UserCreateRequestDto userCreateRequestDto) {
-        validateDuplicateUser(userCreateRequestDto.getEmail());
+    public void register(UserUpsertRequestDto userUpsertRequestDto) {
+        validateDuplicateUser(userUpsertRequestDto.getEmail());
 
-        User user = userCreateRequestDto.toEntity();
-        user.encryptPwd(getSHA256Pwd(userCreateRequestDto.getPassword()));
+        User user = userUpsertRequestDto.toEntity();
+        user.encryptPwd(getSHA256Pwd(userUpsertRequestDto.getPassword()));
         log.debug("   ---> user {}",user);
         userRepository.save(user);
     }
