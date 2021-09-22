@@ -4,11 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import java.security.InvalidKeyException;
 
 @ControllerAdvice
 @Slf4j
@@ -55,6 +58,33 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         log.info(ex.getFieldError().toString());
         return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    protected ResponseEntity<Object> handleUsernameNotFoundException(Exception ex, WebRequest webRequest) {
+
+        ExceptionResponse exceptionResponse = ExceptionResponse.builder()
+                .code(400)
+                .sendMessages("BAD_REQUEST")
+                .message(ex.getMessage())
+                .build();
+
+        log.info(ex.getMessage());
+        return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidKeyException.class)
+    protected ResponseEntity<Object> handleInvalidKeyException(Exception ex, WebRequest webRequest) {
+
+        ExceptionResponse exceptionResponse = ExceptionResponse.builder()
+                .code(400)
+                .sendMessages("BAD_REQUEST")
+                .message(ex.getMessage())
+                .build();
+
+        log.info(ex.getMessage());
+        return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+    }
+
 
 
 }

@@ -51,4 +51,9 @@ public class Task extends BaseTime {
         this.importance = Optional.ofNullable(this.importance).orElse(3);
     }
 
+    public void deleteUser() {
+        this.user = null;
+        this.category = null;
+    }
+
 }
