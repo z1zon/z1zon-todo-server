@@ -1,5 +1,6 @@
 package com.nnlk.z1zontodoserver.domain;
 
+import com.nnlk.z1zontodoserver.dto.user.request.UserUpsertRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,6 +37,13 @@ public class User extends BaseTime implements UserDetails {
     private String email;
 
     private String provider;
+
+    public void update(UserUpsertRequestDto userUpsertRequestDto){
+        this.name=userUpsertRequestDto.getName();
+        this.password= userUpsertRequestDto.getPassword();
+        this.role = userUpsertRequestDto.getRole();
+        this.email = userUpsertRequestDto.getEmail();
+    }
 
     /**
      * insert 되기전(persist 되기 전) 실행된다.

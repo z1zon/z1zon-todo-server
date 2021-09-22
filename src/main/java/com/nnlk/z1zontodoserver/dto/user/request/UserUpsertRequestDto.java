@@ -23,6 +23,9 @@ public class UserUpsertRequestDto {
     @Pattern(regexp = "[a-zA-z0-9]+@[a-zA-z]+[.]+[a-zA-z.]+",message = "이메일 입력 형식에 맞지 않습니다.")
     private String email;
 
+    public void setEncryptPassword(String password){
+        this.password = password;
+    }
     public User toEntity(){
         return User.builder()
                 .name(name)
