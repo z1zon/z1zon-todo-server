@@ -56,4 +56,8 @@ public class Task extends BaseTime {
         this.category = null;
     }
 
+    public void deleteCategory(){
+        this.category = null;
+    }
+
 }
