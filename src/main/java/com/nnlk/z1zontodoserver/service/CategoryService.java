@@ -6,7 +6,8 @@ import com.nnlk.z1zontodoserver.dto.category.request.CategoryUpsertRequestDto;
 import com.nnlk.z1zontodoserver.dto.category.response.CategoryResponseDto;
 import com.nnlk.z1zontodoserver.exception.NotExistObjectException;
 import com.nnlk.z1zontodoserver.repository.CategoryRepository;
-import lombok.AllArgsConstructor;
+import com.nnlk.z1zontodoserver.repository.TaskRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,12 +16,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 @Slf4j
 public class CategoryService {
 
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
+    private final TaskRepository taskRepository;
 
     public void create(User user, CategoryUpsertRequestDto categoryUpsertRequestDto) {
         Category category = categoryUpsertRequestDto.toEntity(user);
@@ -32,10 +34,13 @@ public class CategoryService {
         Category category = validateUserCategory(user, cateogoryId);
         category.update(categoryUpsertRequestDto.getCategoryName());
     }
+
     @Transactional
     public void delete(User user, Long categoryId) {
         validateUserCategory(user, categoryId);
+        taskRepository.findAllByCategoryId(categoryId).forEach(task -> task.deleteCategory());
         categoryRepository.deleteById(categoryId);
+
     }
 
     public List<CategoryResponseDto> findAll(User user) {
