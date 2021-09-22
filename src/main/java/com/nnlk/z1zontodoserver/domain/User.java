@@ -38,9 +38,9 @@ public class User extends BaseTime implements UserDetails {
 
     private String provider;
 
-    public void update(UserUpsertRequestDto userUpsertRequestDto){
-        this.name=userUpsertRequestDto.getName();
-        this.password= userUpsertRequestDto.getPassword();
+    public void update(UserUpsertRequestDto userUpsertRequestDto) {
+        this.name = userUpsertRequestDto.getName();
+        this.password = userUpsertRequestDto.getPassword();
         this.role = userUpsertRequestDto.getRole();
         this.email = userUpsertRequestDto.getEmail();
     }
