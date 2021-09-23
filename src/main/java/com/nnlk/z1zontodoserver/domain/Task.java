@@ -1,5 +1,6 @@
 package com.nnlk.z1zontodoserver.domain;
 
+import com.nnlk.z1zontodoserver.dto.task.TaskUpsertRequestDto;
 import com.nnlk.z1zontodoserver.dto.task.TaskResponseDto;
 import lombok.*;
 
@@ -65,4 +66,13 @@ public class Task extends BaseTime {
                 .build();
     }
 
+    public void update(TaskUpsertRequestDto taskUpsertRequestDto, Category category) {
+        this.content = taskUpsertRequestDto.getContent();
+        this.color = taskUpsertRequestDto.getColor();
+        this.importance = taskUpsertRequestDto.getImportance();
+        this.taskStatus = taskUpsertRequestDto.getTaskStatus();
+        this.startAt = taskUpsertRequestDto.getStartAt();
+        this.endAt = taskUpsertRequestDto.getEndAt();
+        this.category = category;
+    }
 }

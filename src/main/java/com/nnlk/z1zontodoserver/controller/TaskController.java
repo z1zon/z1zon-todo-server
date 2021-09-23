@@ -1,21 +1,21 @@
 package com.nnlk.z1zontodoserver.controller;
 
-import com.nnlk.z1zontodoserver.domain.Task;
 import com.nnlk.z1zontodoserver.domain.User;
 import com.nnlk.z1zontodoserver.dto.common.ResponseDto;
-import com.nnlk.z1zontodoserver.dto.task.TaskCreateDto;
+import com.nnlk.z1zontodoserver.dto.task.TaskUpsertRequestDto;
 import com.nnlk.z1zontodoserver.dto.task.TaskResponseDto;
-import com.nnlk.z1zontodoserver.repository.CategoryRepository;
-import com.nnlk.z1zontodoserver.repository.UserRepository;
 import com.nnlk.z1zontodoserver.service.TaskService;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+
 import java.util.List;
 
 @RestController
@@ -28,8 +28,8 @@ public class TaskController {
 
     @PostMapping("task")
     private ResponseDto create(@ApiIgnore @AuthenticationPrincipal User user,
-                               @RequestBody @Valid TaskCreateDto taskCreateDto) {
-        taskService.create(user, taskCreateDto);
+                               @RequestBody @Valid TaskUpsertRequestDto taskUpsertRequestDto) {
+        taskService.create(user, taskUpsertRequestDto);
 
         return ResponseDto.builder()
                 .status(HttpStatus.CREATED)
@@ -38,7 +38,7 @@ public class TaskController {
     }
 
     @GetMapping("/tasks")
-    private ResponseDto findAll(@AuthenticationPrincipal User user) {
+    private ResponseDto findAll(@ApiIgnore @AuthenticationPrincipal User user) {
         List<TaskResponseDto> tasks = taskService.findAll(user);
 
         return ResponseDto.builder()
@@ -49,11 +49,11 @@ public class TaskController {
     }
 
     @PostMapping("/task/update/{taskId}")
-    public ResponseDto update(@AuthenticationPrincipal User user,
-                              @Valid @RequestBody TaskCreateDto taskCreateDto,
+    public ResponseDto update(@ApiIgnore @AuthenticationPrincipal User user,
+                              @RequestBody @Valid TaskUpsertRequestDto taskUpsertRequestDto,
                               @PathVariable Long taskId
     ) {
-        taskService.update(user, taskId, taskCreateDto);
+        taskService.update(user, taskId, taskUpsertRequestDto);
 
         return ResponseDto.builder()
                 .messsage("update success")

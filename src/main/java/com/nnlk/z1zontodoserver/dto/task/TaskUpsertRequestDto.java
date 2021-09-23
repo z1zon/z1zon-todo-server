@@ -10,11 +10,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class TaskCreateDto {
+public class TaskUpsertRequestDto {
 
     @NotNull(message = "name은 필수 값 입니다.")
     private String content;
