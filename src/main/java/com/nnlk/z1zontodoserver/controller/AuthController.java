@@ -13,6 +13,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.validation.Valid;
 
@@ -68,12 +69,15 @@ public class AuthController {
      * 인증 uri: https://github.com/login/oauth/authorize?client_id=cfcabcb37f8af4177c2a
      */
     @GetMapping("/github/callback")
-    public String githubLogin(String code) throws JsonProcessingException {
+    public RedirectView githubCallback(String code) throws JsonProcessingException {
 
         log.debug("   ---> code = {}", code);
 
-        authService.githubLogin(code);
+        String jwtToken = authService.githubCallback(code);
 
-        return "redirect:/";
+        RedirectView redirectView = new RedirectView();
+        redirectView.setHosts("127.0.0.1");
+        redirectView.setUrl("/?bear="+jwtToken);
+        return redirectView;
     }
 }

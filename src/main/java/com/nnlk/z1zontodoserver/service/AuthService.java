@@ -33,6 +33,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
+import java.util.Optional;
 
 
 @RequiredArgsConstructor
@@ -42,6 +43,7 @@ public class AuthService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final TokenProvider tokenProvider;
+
     @Value("${oauth.github.client_id}")
     private String clientId;
     @Value("${oauth.github.client_secret}")
@@ -98,19 +100,29 @@ public class AuthService implements UserDetailsService {
         }
         return user;
     }
+
     /*
-    * 1. code를 통해 access_token 획득
-    * 2. access_token통해 user 정보 획득
-    * 3. 저장후 jwt secret을 이용해 토큰 발급 및 유저정보 저장
-    * */
-    public void githubLogin(String code) throws JsonProcessingException{
+     * 1. code를 통해 access_token 획득
+     * 2. access_token통해 user 정보 획득
+     * 3. 저장후 jwt secret을 이용해 토큰 발급 및 유저정보 저장
+     * */
+    @Transactional
+    public String githubCallback(String code) throws JsonProcessingException {
 
         Map<String, String> tokenResponseMap = getAccessToken(code);
-        GithubUserResponseDto githubUserResponseDto = getUserInformation(tokenResponseMap.get("access_token"));
-
+        UserUpsertRequestDto userUpsertRequestDto = getUserInformation(tokenResponseMap.get("access_token"));
+        upsertGithubUser(userUpsertRequestDto);
+        return tokenProvider.createToken(userUpsertRequestDto.getEmail());
     }
 
-    private GithubUserResponseDto getUserInformation(String accessToken) throws JsonProcessingException {
+    private void upsertGithubUser(UserUpsertRequestDto userUpsertRequestDto) {
+
+        userRepository
+                .findByNameAndProvider(userUpsertRequestDto.getName(), userUpsertRequestDto.getProvider())
+                .ifPresentOrElse(user -> user.update(userUpsertRequestDto), () -> userRepository.save(userUpsertRequestDto.toEntity()));
+    }
+
+    private UserUpsertRequestDto getUserInformation(String accessToken) throws JsonProcessingException {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders requestHeaders = new HttpHeaders();
         MultiValueMap<String, String> requestBodys = new LinkedMultiValueMap<>();
@@ -120,7 +132,7 @@ public class AuthService implements UserDetailsService {
 
         HttpEntity<MultiValueMap<String, String>> requestEntity =
                 new HttpEntity<>(requestBodys, requestHeaders);
-        //HTTP 요청하기 -POST 방식으로 - 그리고 response변수의 응답받음.
+
         String uri = "https://api.github.com/user";
         ResponseEntity<String> responseEntity = restTemplate.exchange(
                 uri,
@@ -131,10 +143,18 @@ public class AuthService implements UserDetailsService {
         ObjectMapper objectMapper = new ObjectMapper();
         GithubUserResponseDto githubUserResponseDto =
                 objectMapper.readValue(responseEntity.getBody(), GithubUserResponseDto.class);
-        log.debug("   ---> User 정보 파싱 전 {}", responseEntity.getBody());
-        log.debug("   ---> User 정보");
-        log.debug("   ---> User info {}", githubUserResponseDto);
-        return githubUserResponseDto;
+
+        log.debug("   ---> Oauth 유저 정보 {}", githubUserResponseDto);
+
+        String userName = githubUserResponseDto.getLogin();
+
+        return UserUpsertRequestDto.builder()
+                .name(userName)
+                .email(Optional.ofNullable(githubUserResponseDto.getEmail()).orElse(userName + "@github.com"))
+                .provider("github")
+                .password(" ")
+                .role("public")
+                .build();
     }
 
     private Map<String, String> getAccessToken(String code) {
