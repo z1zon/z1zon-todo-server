@@ -13,6 +13,6 @@ assignees: ''
 
 
 ## 진행사항
--[] todo1
--[] todo2
--[] todo3
+- todo1
+- todo2
+- todo3
