@@ -73,7 +73,7 @@ public class AuthController {
 
         log.debug("   ---> code = {}", code);
 
-        String jwtToken = authService.githubCallback(code);
+        String jwtToken = authService.getJwtByGithubCode(code);
 
         RedirectView redirectView = new RedirectView();
         redirectView.setHosts("127.0.0.1");

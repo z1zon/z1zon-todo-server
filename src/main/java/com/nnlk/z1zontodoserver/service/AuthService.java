@@ -52,17 +52,8 @@ public class AuthService implements UserDetailsService {
     private String accessTokenUri;
     @Value("${oauth.github.redirect_uri}")
     private String redirectUri;
-//
-//    @PostConstruct
-//    public void init(@Value("${oauth.github.client_id}") String clientId,
-//                     @Value("${oauth.github.client_secret}") String clientSecret,
-//                     @Value("${oauth.github.access_token_uri}") String accessTokenUri,
-//                     @Value("${oauth.github.redirect_uri}") String redirectUri) {
-//        this.clientId = clientId;
-//        this.clientSecret = clientSecret;
-//        this.accessTokenUri = accessTokenUri;
-//        this.redirectUri = redirectUri;
-//    }
+    @Value("${oauth.github.github_api_uri}")
+    private String githubApiUri;
 
     @Transactional
     public void register(UserUpsertRequestDto userUpsertRequestDto) {
@@ -107,7 +98,7 @@ public class AuthService implements UserDetailsService {
      * 3. 저장후 jwt secret을 이용해 토큰 발급 및 유저정보 저장
      * */
     @Transactional
-    public String githubCallback(String code) throws JsonProcessingException {
+    public String getJwtByGithubCode(String code) throws JsonProcessingException {
 
         Map<String, String> tokenResponseMap = getAccessToken(code);
         UserUpsertRequestDto userUpsertRequestDto = getUserInformation(tokenResponseMap.get("access_token"));
@@ -133,9 +124,8 @@ public class AuthService implements UserDetailsService {
         HttpEntity<MultiValueMap<String, String>> requestEntity =
                 new HttpEntity<>(requestBodys, requestHeaders);
 
-        String uri = "https://api.github.com/user";
         ResponseEntity<String> responseEntity = restTemplate.exchange(
-                uri,
+                githubApiUri,
                 HttpMethod.GET,
                 requestEntity,
                 String.class
