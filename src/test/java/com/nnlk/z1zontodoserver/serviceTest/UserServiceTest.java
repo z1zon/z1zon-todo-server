@@ -59,7 +59,7 @@ public class UserServiceTest {
     @Test
     @Transactional
     public void update() {
-        UserUpsertRequestDto userUpsertRequestDto = new UserUpsertRequestDto("test-user-update", "1234", "role", "test@naver.com");
+        UserUpsertRequestDto userUpsertRequestDto = new UserUpsertRequestDto("test-user-update", "1234", "role", "test@naver.com","provider");
         User user = Optional.of(userRepository.findByEmail("test@naver.com")).orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다."));
         user.update(userUpsertRequestDto);
         userRepository.flush();
