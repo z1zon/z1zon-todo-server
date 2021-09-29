@@ -1,13 +1,19 @@
 package com.nnlk.z1zontodoserver.domain;
 
-import lombok.*;
+import com.nnlk.z1zontodoserver.dto.user.request.UserUpsertRequestDto;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 
 @Getter
 @Builder
@@ -31,6 +37,13 @@ public class User extends BaseTime implements UserDetails {
     private String email;
 
     private String provider;
+
+    public void update(UserUpsertRequestDto userUpsertRequestDto) {
+        this.name = userUpsertRequestDto.getName();
+        this.password = userUpsertRequestDto.getPassword();
+        this.role = userUpsertRequestDto.getRole();
+        this.email = userUpsertRequestDto.getEmail();
+    }
 
     /**
      * insert 되기전(persist 되기 전) 실행된다.

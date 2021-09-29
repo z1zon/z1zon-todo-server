@@ -1,7 +1,5 @@
 package com.nnlk.z1zontodoserver.domain;
 
-import com.nnlk.z1zontodoserver.dto.task.TaskUpsertRequestDto;
-import com.nnlk.z1zontodoserver.dto.task.TaskResponseDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -53,26 +51,13 @@ public class Task extends BaseTime {
         this.importance = Optional.ofNullable(this.importance).orElse(3);
     }
 
-    public TaskResponseDto toResponseDto() {
-        return TaskResponseDto.builder()
-                .id(this.id)
-                .category(this.category) // 해당 부분 categoryDto 변환 필요, merge 후 작업
-                .color(this.color)
-                .importance(this.importance)
-                .taskStatus(this.taskStatus)
-                .startAt(this.startAt)
-                .endAt(this.endAt)
-                .userId(this.user.getId())
-                .build();
+    public void deleteUser() {
+        this.user = null;
+        this.category = null;
     }
 
-    public void update(TaskUpsertRequestDto taskUpsertRequestDto, Category category) {
-        this.content = taskUpsertRequestDto.getContent();
-        this.color = taskUpsertRequestDto.getColor();
-        this.importance = taskUpsertRequestDto.getImportance();
-        this.taskStatus = taskUpsertRequestDto.getTaskStatus();
-        this.startAt = taskUpsertRequestDto.getStartAt();
-        this.endAt = taskUpsertRequestDto.getEndAt();
-        this.category = category;
+    public void deleteCategory(){
+        this.category = null;
     }
+
 }

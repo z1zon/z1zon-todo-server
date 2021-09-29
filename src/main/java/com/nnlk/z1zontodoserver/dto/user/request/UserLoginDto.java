@@ -1,4 +1,4 @@
-package com.nnlk.z1zontodoserver.dto.user;
+package com.nnlk.z1zontodoserver.dto.user.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
