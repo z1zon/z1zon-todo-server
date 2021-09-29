@@ -13,7 +13,6 @@ public class AuthControllerTest {
     @Test
     public void parseTest() {
 
-        //OAuthToken oauthToken = null;
         String data = "access_token=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&scope=&token_type=bearer";
         Map<String,String> map = new HashMap<>();
         Map<String,String> queryParameters = Splitter
