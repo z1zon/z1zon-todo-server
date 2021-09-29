@@ -1,5 +1,6 @@
 package com.nnlk.z1zontodoserver.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nnlk.z1zontodoserver.dto.user.request.UserLoginDto;
 import com.nnlk.z1zontodoserver.dto.user.request.UserUpsertRequestDto;
 import com.nnlk.z1zontodoserver.service.AuthService;
@@ -11,10 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.validation.Valid;
 
@@ -29,10 +28,10 @@ public class AuthController {
     /*
      * TODO Exception Refactoring
      * */
-    @PostMapping("signup")
+    @PostMapping("/signup")
     public ResponseEntity<String> save(@RequestBody @Valid UserUpsertRequestDto userUpsertRequestDto, Errors errors) {
         try {
-            if(log.isDebugEnabled()){
+            if (log.isDebugEnabled()) {
                 log.debug("   ---> 회원가입 시작 {}", userUpsertRequestDto);
             }
             authService.register(userUpsertRequestDto);
@@ -47,8 +46,8 @@ public class AuthController {
      * */
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody @Valid UserLoginDto userLoginDto, Errors errors) {
-        if(log.isDebugEnabled()){
-            log.debug("   ---> 로그인 인증 시작 {}",userLoginDto);
+        if (log.isDebugEnabled()) {
+            log.debug("   ---> 로그인 인증 시작 {}", userLoginDto);
         }
         HttpHeaders httpHeaders = new HttpHeaders();
         try {
@@ -63,5 +62,22 @@ public class AuthController {
         }
 
         return new ResponseEntity<String>("login Success", httpHeaders, HttpStatus.OK);
+    }
+
+    /** 클라이언트 깃허브 인증 선택시 콜백,
+     * request: code
+     * 인증 uri: https://github.com/login/oauth/authorize?client_id=cfcabcb37f8af4177c2a
+     */
+    @GetMapping("/github/callback")
+    public RedirectView githubCallback(String code) throws JsonProcessingException {
+
+        log.debug("   ---> code = {}", code);
+
+        String jwtToken = authService.getJwtByGithubCode(code);
+
+        RedirectView redirectView = new RedirectView();
+        redirectView.setHosts("127.0.0.1");
+        redirectView.setUrl("/?bear="+jwtToken);
+        return redirectView;
     }
 }
