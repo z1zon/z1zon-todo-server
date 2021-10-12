@@ -59,6 +59,7 @@ public class TaskController {
                 .status(HttpStatus.OK)
                 .build();
     }
+
     @DeleteMapping("/task/{taskId}")
     public ResponseDto delete(@ApiIgnore @AuthenticationPrincipal User user, @PathVariable Long taskId) {
         taskService.delete(user, taskId);
