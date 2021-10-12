@@ -7,10 +7,7 @@ import com.nnlk.z1zontodoserver.service.SubTaskService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,5 +35,30 @@ public class SubtaskController {
                 .messsage("subtask create success")
                 .build();
     }
+
+    @PostMapping("/task/update/{subtaskId}")
+    public ResponseDto update(@ApiIgnore @AuthenticationPrincipal User user,
+                              @RequestBody @Valid SubTaskUpsertDto subTaskUpsertDto,
+                              @PathVariable Long subtaskId
+    ) {
+        subTaskService.update(user, subtaskId, subTaskUpsertDto);
+
+        return ResponseDto.builder()
+                .messsage("update success")
+                .status(HttpStatus.OK)
+                .build();
+    }
+
+    @DeleteMapping("/subtask/{subtaskId}")
+    public ResponseDto delete(@ApiIgnore @AuthenticationPrincipal User user, @PathVariable Long subtaskId) {
+        subTaskService.delete(user, subtaskId);
+        return ResponseDto.builder()
+                .messsage("delete success")
+                .status(HttpStatus.OK)
+                .build();
+    }
+
+
+
 
 }
