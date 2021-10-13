@@ -6,6 +6,7 @@ import com.nnlk.z1zontodoserver.dto.task.TaskUpsertRequestDto;
 import com.nnlk.z1zontodoserver.dto.task.TaskResponseDto;
 import com.nnlk.z1zontodoserver.service.TaskService;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -20,12 +21,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class TaskController {
     private final TaskService taskService;
 
-    @PostMapping("task")
+    @PostMapping("/task")
     private ResponseDto create(@ApiIgnore @AuthenticationPrincipal User user,
                                @RequestBody @Valid TaskUpsertRequestDto taskUpsertRequestDto) {
         taskService.create(user, taskUpsertRequestDto);
