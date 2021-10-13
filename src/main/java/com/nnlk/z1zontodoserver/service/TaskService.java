@@ -44,6 +44,7 @@ public class TaskService {
         validateUserTask(user, taskId);
         taskRepository.deleteById(taskId);
     }
+
     public List<TaskResponseDto> findAll(User user) {
         Long userId = user.getId();
         List<Task> tasks = taskRepository.findAllByUserId(userId);
