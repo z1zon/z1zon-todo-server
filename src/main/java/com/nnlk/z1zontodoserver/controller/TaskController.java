@@ -1,71 +1,52 @@
-package com.nnlk.z1zontodoserver.controller;
+package com.nnlk.z1zontodoserver.service;
 
+import com.nnlk.z1zontodoserver.domain.SubTask;
+import com.nnlk.z1zontodoserver.domain.Task;
 import com.nnlk.z1zontodoserver.domain.User;
-import com.nnlk.z1zontodoserver.dto.common.ResponseDto;
-import com.nnlk.z1zontodoserver.dto.task.TaskUpsertRequestDto;
-import com.nnlk.z1zontodoserver.dto.task.TaskResponseDto;
-import com.nnlk.z1zontodoserver.service.TaskService;
-
+import com.nnlk.z1zontodoserver.dto.subtask.SubTaskUpsertDto;
+import com.nnlk.z1zontodoserver.exception.NotExistObjectException;
+import com.nnlk.z1zontodoserver.repository.SubTaskRepository;
+import com.nnlk.z1zontodoserver.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import lombok.extern.slf4j.Slf4j;
-import springfox.documentation.annotations.ApiIgnore;
+import java.util.Optional;
 
-import javax.validation.Valid;
-
-import java.util.List;
-
-@RestController
-@RequestMapping("/api/v1")
+@Service
 @RequiredArgsConstructor
-@Slf4j
-public class TaskController {
-    private final TaskService taskService;
+public class SubTaskService {
 
-    @PostMapping("/task")
-    private ResponseDto create(@ApiIgnore @AuthenticationPrincipal User user,
-                               @RequestBody @Valid TaskUpsertRequestDto taskUpsertRequestDto) {
-        taskService.create(user, taskUpsertRequestDto);
+    private final SubTaskRepository subTaskRepository;
+    private final TaskRepository taskRepository;
 
-        return ResponseDto.builder()
-                .status(HttpStatus.CREATED)
-                .messsage("task create success")
-                .build();
+    public void create(User user, SubTaskUpsertDto subTaskUpsertDto) {
+        Task task = validateUserTask(user, subTaskUpsertDto.getTaskId());
+        SubTask newSubTask = subTaskUpsertDto.toEntity(task);
+        subTaskRepository.save(newSubTask);
     }
 
-    @GetMapping("/tasks")
-    private ResponseDto findAll(@ApiIgnore @AuthenticationPrincipal User user) {
-        List<TaskResponseDto> tasks = taskService.findAll(user);
-
-        return ResponseDto.builder()
-                .messsage("tasks lookup success")
-                .status(HttpStatus.OK)
-                .data(tasks)
-                .build();
+    @Transactional
+    public void delete(User user, Long subtaskId) {
+        validateUserTask(user, subtaskId);
+        subTaskRepository.deleteById(subtaskId);
     }
 
-    @PostMapping("/task/update/{taskId}")
-    public ResponseDto update(@ApiIgnore @AuthenticationPrincipal User user,
-                              @RequestBody @Valid TaskUpsertRequestDto taskUpsertRequestDto,
-                              @PathVariable Long taskId
-    ) {
-        taskService.update(user, taskId, taskUpsertRequestDto);
-
-        return ResponseDto.builder()
-                .messsage("update success")
-                .status(HttpStatus.OK)
-                .build();
+    public void update(User user, Long subtaskId, SubTaskUpsertDto subTaskUpsertDto) {
+        validateUserTask(user, subTaskUpsertDto.getTaskId());
+        SubTask subTask = Optional.ofNullable(subTaskRepository.findById(subtaskId).get()).orElseThrow(() -> new NotExistObjectException("task is not exist"));
+        subTask.update(subTaskUpsertDto);
     }
 
-    @DeleteMapping("/task/{taskId}")
-    public ResponseDto delete(@ApiIgnore @AuthenticationPrincipal User user, @PathVariable Long taskId) {
-        taskService.delete(user, taskId);
-        return ResponseDto.builder()
-                .messsage("delete success")
-                .status(HttpStatus.OK)
-                .build();
+    /**
+     * 중복되는 코드, 유틸폴더로 분리 필요
+     */
+    private Task validateUserTask(User user, Long taskId) {
+        Long userId = user.getId();
+        Task task = taskRepository.findByIdAndUserId(taskId, userId);
+
+        return Optional.ofNullable(task).orElseThrow(() -> new NotExistObjectException("task is not exist"));
     }
+
+
 }
