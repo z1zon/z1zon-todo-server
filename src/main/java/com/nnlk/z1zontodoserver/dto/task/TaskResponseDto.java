@@ -1,7 +1,7 @@
 package com.nnlk.z1zontodoserver.dto.task;
 
-import com.nnlk.z1zontodoserver.domain.Category;
 import com.nnlk.z1zontodoserver.domain.TaskStatus;
+import com.nnlk.z1zontodoserver.dto.category.response.CategoryResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -24,7 +24,7 @@ public class TaskResponseDto {
 
     private LocalDate endAt;
 
-    private Category category;
+    private CategoryResponseDto category;
 
     private Long userId;
 }

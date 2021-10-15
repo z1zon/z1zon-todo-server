@@ -40,7 +40,7 @@ public class TaskUpsertRequestDto {
                 .content(content)
                 .importance(importance)
                 .color(color)
-                .taskStatus(TaskStatus.TODO)
+                .taskStatus(taskStatus)
                 .category(category)
                 .user(user)
                 .startAt(startAt)

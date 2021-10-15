@@ -51,6 +51,7 @@ public class Task extends BaseTime {
     public void perPersist() {
         this.color = Optional.ofNullable(this.color).orElse("#000000");
         this.importance = Optional.ofNullable(this.importance).orElse(3);
+        this.taskStatus = Optional.ofNullable(this.taskStatus).orElse(TaskStatus.TODO);
     }
 
     public void deleteUser() {
@@ -65,7 +66,7 @@ public class Task extends BaseTime {
     public TaskResponseDto toResponseDto() {
         return TaskResponseDto.builder()
                 .id(this.id)
-                .category(this.category) // 해당 부분 categoryDto 변환 필요, merge 후 작업
+                .category(this.category.toResponseDto())
                 .color(this.color)
                 .importance(this.importance)
                 .taskStatus(this.taskStatus)
