@@ -3,7 +3,8 @@ package com.nnlk.z1zontodoserver.service;
 import com.nnlk.z1zontodoserver.domain.SubTask;
 import com.nnlk.z1zontodoserver.domain.Task;
 import com.nnlk.z1zontodoserver.domain.User;
-import com.nnlk.z1zontodoserver.dto.subtask.SubTaskUpsertDto;
+import com.nnlk.z1zontodoserver.dto.subtask.SubtaskResponseDto;
+import com.nnlk.z1zontodoserver.dto.subtask.SubtaskUpsertDto;
 import com.nnlk.z1zontodoserver.exception.NotExistObjectException;
 import com.nnlk.z1zontodoserver.repository.SubTaskRepository;
 import com.nnlk.z1zontodoserver.repository.TaskRepository;
@@ -11,7 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +24,7 @@ public class SubTaskService {
     private final SubTaskRepository subTaskRepository;
     private final TaskRepository taskRepository;
 
-    public void create(User user, SubTaskUpsertDto subTaskUpsertDto) {
+    public void create(User user, SubtaskUpsertDto subTaskUpsertDto) {
         Task task = validateUserTask(user, subTaskUpsertDto.getTaskId());
         SubTask newSubTask = subTaskUpsertDto.toEntity(task);
         subTaskRepository.save(newSubTask);
@@ -28,14 +32,32 @@ public class SubTaskService {
 
     @Transactional
     public void delete(User user, Long subtaskId) {
-        validateUserTask(user, subtaskId);
+        SubTask subTask = isValidateSubtask(subtaskId);
+        Long taskId = subTask.getTask().getId();
+        validateUserTask(user, taskId);
+
         subTaskRepository.deleteById(subtaskId);
     }
 
-    public void update(User user, Long subtaskId, SubTaskUpsertDto subTaskUpsertDto) {
+    @Transactional
+    public void update(User user, Long subtaskId, SubtaskUpsertDto subTaskUpsertDto) {
         validateUserTask(user, subTaskUpsertDto.getTaskId());
-        SubTask subTask = Optional.ofNullable(subTaskRepository.findById(subtaskId).get()).orElseThrow(() -> new NotExistObjectException("task is not exist"));
+        SubTask subTask = isValidateSubtask(subtaskId);
         subTask.update(subTaskUpsertDto);
+    }
+
+    public List<SubtaskResponseDto> findAll(User user, Long taskId) {
+        validateUserTask(user, taskId);
+        List<SubTask> subTasks = subTaskRepository.findAllByTaskId(taskId);
+
+        return subTasks.stream()
+                .map(subTask -> subTask.toResponseDto())
+                .collect(toList());
+    }
+
+    private SubTask isValidateSubtask(Long subtaskId) {
+        return Optional.ofNullable(subTaskRepository.findById(subtaskId).get())
+                .orElseThrow(() -> new NotExistObjectException("subtask is not exist"));
     }
 
     /**
@@ -47,6 +69,5 @@ public class SubTaskService {
 
         return Optional.ofNullable(task).orElseThrow(() -> new NotExistObjectException("task is not exist"));
     }
-
 
 }

@@ -1,10 +1,11 @@
 package com.nnlk.z1zontodoserver.domain;
 
-import com.nnlk.z1zontodoserver.dto.subtask.SubTaskUpsertDto;
-import com.nnlk.z1zontodoserver.dto.task.TaskUpsertRequestDto;
-import lombok.*;
+import com.nnlk.z1zontodoserver.dto.subtask.SubtaskResponseDto;
+import com.nnlk.z1zontodoserver.dto.subtask.SubtaskUpsertDto;
 
+import lombok.*;
 import javax.persistence.*;
+import java.util.Optional;
 
 
 @Builder
@@ -27,9 +28,23 @@ public class SubTask extends BaseTime {
     @JoinColumn(name = "task_id")
     private Task task;
 
-    public void update(SubTaskUpsertDto subTaskUpsertDto) {
+    @PrePersist
+    public void perPersist() {
+        this.taskStatus = Optional.ofNullable(this.taskStatus).orElse(TaskStatus.TODO);
+    }
+
+    public void update(SubtaskUpsertDto subTaskUpsertDto) {
+        System.out.println(subTaskUpsertDto.getTaskStatus());
         this.content = subTaskUpsertDto.getContent();
         this.taskStatus = subTaskUpsertDto.getTaskStatus();
+    }
+
+    public SubtaskResponseDto toResponseDto() {
+        return SubtaskResponseDto.builder()
+                .id(id)
+                .content(content)
+                .taskStatus(taskStatus)
+                .build();
     }
 
 }
