@@ -6,6 +6,7 @@ import com.nnlk.z1zontodoserver.dto.user.request.UserUpsertRequestDto;
 import com.nnlk.z1zontodoserver.service.AuthService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,8 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @RestController
@@ -24,7 +27,8 @@ import javax.validation.Valid;
 public class AuthController {
 
     private AuthService authService;
-
+    @Value("${uri.client}")
+    private String clientUri;
     /*
      * TODO Exception Refactoring
      * */
@@ -45,14 +49,17 @@ public class AuthController {
      * TODO Exception Refactoring
      * */
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody @Valid UserLoginDto userLoginDto, Errors errors) {
+    public ResponseEntity<String> login(@RequestBody @Valid UserLoginDto userLoginDto, HttpServletResponse response, Errors errors) {
         if (log.isDebugEnabled()) {
             log.debug("   ---> 로그인 인증 시작 {}", userLoginDto);
         }
         HttpHeaders httpHeaders = new HttpHeaders();
         try {
             String jwtToken = authService.login(userLoginDto);
-            httpHeaders.setBearerAuth(jwtToken);
+            Cookie cookie = new Cookie("Bearer",jwtToken);
+            cookie.setHttpOnly(true);
+            cookie.setMaxAge(60*60*24);
+            response.addCookie(cookie);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<String>("password wrong", HttpStatus.BAD_REQUEST);
         } catch (DisabledException e) {
@@ -69,15 +76,15 @@ public class AuthController {
      * 인증 uri: https://github.com/login/oauth/authorize?client_id=cfcabcb37f8af4177c2a
      */
     @GetMapping("/github/callback")
-    public RedirectView githubCallback(String code) throws JsonProcessingException {
-
+    public RedirectView githubCallback(String code, HttpServletResponse response) throws JsonProcessingException {
         log.debug("   ---> code = {}", code);
-
         String jwtToken = authService.getJwtByGithubCode(code);
-
-        RedirectView redirectView = new RedirectView();
-        redirectView.setHosts("127.0.0.1");
-        redirectView.setUrl("/?bear="+jwtToken);
+        Cookie cookie = new Cookie("Bearer",jwtToken);
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(60*60*24);
+        response.addCookie(cookie);
+        RedirectView redirectView = new RedirectView(clientUri);
+        redirectView.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
         return redirectView;
     }
 }

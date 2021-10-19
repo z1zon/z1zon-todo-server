@@ -107,7 +107,6 @@ public class AuthService implements UserDetailsService {
     }
 
     private void upsertGithubUser(UserUpsertRequestDto userUpsertRequestDto) {
-
         userRepository
                 .findByNameAndProvider(userUpsertRequestDto.getName(), userUpsertRequestDto.getProvider())
                 .ifPresentOrElse(user -> user.update(userUpsertRequestDto), () -> userRepository.save(userUpsertRequestDto.toEntity()));
@@ -160,7 +159,7 @@ public class AuthService implements UserDetailsService {
         requestBodys.add("code", code);
         requestBodys.add("client_secret", clientSecret);
 
-        HttpEntity<MultiValueMap<String, String>> requestEntity =
+          HttpEntity<MultiValueMap<String, String>> requestEntity =
                 new HttpEntity<>(requestBodys, requestHeaders);
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(
