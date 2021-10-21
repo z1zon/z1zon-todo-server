@@ -1,10 +1,11 @@
 package com.nnlk.z1zontodoserver.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.nnlk.z1zontodoserver.common.CommonUtil;
 import com.nnlk.z1zontodoserver.dto.user.request.UserLoginDto;
 import com.nnlk.z1zontodoserver.dto.user.request.UserUpsertRequestDto;
 import com.nnlk.z1zontodoserver.service.AuthService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -22,13 +23,14 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/auth")
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class AuthController {
 
-    private AuthService authService;
+    private final AuthService authService;
     @Value("${uri.client}")
     private String clientUri;
+    private final CommonUtil commonUtil;
     /*
      * TODO Exception Refactoring
      * */
@@ -56,9 +58,7 @@ public class AuthController {
         HttpHeaders httpHeaders = new HttpHeaders();
         try {
             String jwtToken = authService.login(userLoginDto);
-            Cookie cookie = new Cookie("Bearer",jwtToken);
-            cookie.setHttpOnly(true);
-            cookie.setMaxAge(60*60*24);
+            Cookie cookie = commonUtil.setJwtCookie(jwtToken);
             response.addCookie(cookie);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<String>("password wrong", HttpStatus.BAD_REQUEST);
@@ -79,9 +79,7 @@ public class AuthController {
     public RedirectView githubCallback(String code, HttpServletResponse response) throws JsonProcessingException {
         log.debug("   ---> code = {}", code);
         String jwtToken = authService.getJwtByGithubCode(code);
-        Cookie cookie = new Cookie("Bearer",jwtToken);
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge(60*60*24);
+        Cookie cookie = commonUtil.setJwtCookie(jwtToken);
         response.addCookie(cookie);
         RedirectView redirectView = new RedirectView(clientUri);
         redirectView.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
