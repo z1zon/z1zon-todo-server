@@ -32,7 +32,7 @@ public class SubTaskService {
 
     @Transactional
     public void delete(User user, Long subtaskId) {
-        SubTask subTask = isValidateSubtask(subtaskId);
+        SubTask subTask = validateSubtask(subtaskId);
         Long taskId = subTask.getTask().getId();
         validateUserTask(user, taskId);
 
@@ -42,7 +42,7 @@ public class SubTaskService {
     @Transactional
     public void update(User user, Long subtaskId, SubtaskUpsertDto subTaskUpsertDto) {
         validateUserTask(user, subTaskUpsertDto.getTaskId());
-        SubTask subTask = isValidateSubtask(subtaskId);
+        SubTask subTask = validateSubtask(subtaskId);
         subTask.update(subTaskUpsertDto);
     }
 
@@ -55,7 +55,7 @@ public class SubTaskService {
                 .collect(toList());
     }
 
-    private SubTask isValidateSubtask(Long subtaskId) {
+    private SubTask validateSubtask(Long subtaskId) {
         return Optional.ofNullable(subTaskRepository.findById(subtaskId).get())
                 .orElseThrow(() -> new NotExistObjectException("subtask is not exist"));
     }

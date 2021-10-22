@@ -6,7 +6,6 @@ import com.nnlk.z1zontodoserver.dto.subtask.SubtaskResponseDto;
 import com.nnlk.z1zontodoserver.dto.subtask.SubtaskUpsertDto;
 import com.nnlk.z1zontodoserver.service.SubTaskService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +17,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
-@Slf4j
 public class SubtaskController {
 
     private final SubTaskService subTaskService;

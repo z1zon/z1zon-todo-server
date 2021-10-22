@@ -34,7 +34,6 @@ public class SubTask extends BaseTime {
     }
 
     public void update(SubtaskUpsertDto subTaskUpsertDto) {
-        System.out.println(subTaskUpsertDto.getTaskStatus());
         this.content = subTaskUpsertDto.getContent();
         this.taskStatus = subTaskUpsertDto.getTaskStatus();
     }
