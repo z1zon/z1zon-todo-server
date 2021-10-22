@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class SubTaskResponseDto {
+public class SubtaskResponseDto {
     private Long id;
 
     private String content;

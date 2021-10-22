@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @AllArgsConstructor
-public class SubTaskUpsertDto {
+public class SubtaskUpsertDto {
     @NotNull(message = "content은 필수 값 입니다.")
     private String content;
 
@@ -21,7 +21,7 @@ public class SubTaskUpsertDto {
     public SubTask toEntity(Task task) {
         return SubTask.builder()
                 .content(content)
-                .taskStatus(TaskStatus.TODO)
+                .taskStatus(taskStatus)
                 .task(task)
                 .build();
     }
