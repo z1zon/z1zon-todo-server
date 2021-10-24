@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nnlk.z1zontodoserver.dto.user.request.UserLoginDto;
 import com.nnlk.z1zontodoserver.dto.user.request.UserUpsertRequestDto;
 import com.nnlk.z1zontodoserver.service.AuthService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,11 +15,12 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/auth")
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class AuthController {
 
@@ -45,7 +46,7 @@ public class AuthController {
      * TODO Exception Refactoring
      * */
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody @Valid UserLoginDto userLoginDto, Errors errors) {
+    public ResponseEntity<String> login(@RequestBody @Valid UserLoginDto userLoginDto, HttpServletResponse response, Errors errors) {
         if (log.isDebugEnabled()) {
             log.debug("   ---> 로그인 인증 시작 {}", userLoginDto);
         }
@@ -69,15 +70,14 @@ public class AuthController {
      * 인증 uri: https://github.com/login/oauth/authorize?client_id=cfcabcb37f8af4177c2a
      */
     @GetMapping("/github/callback")
-    public RedirectView githubCallback(String code) throws JsonProcessingException {
-
+    public RedirectView githubCallback(String code, HttpServletResponse response) throws JsonProcessingException {
         log.debug("   ---> code = {}", code);
-
         String jwtToken = authService.getJwtByGithubCode(code);
 
         RedirectView redirectView = new RedirectView();
-        redirectView.setHosts("127.0.0.1");
-        redirectView.setUrl("/?bear="+jwtToken);
+        redirectView.setHosts("http://127.0.0.1");
+        redirectView.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
+        redirectView.setUrl("?bear="+jwtToken);
         return redirectView;
     }
 }
