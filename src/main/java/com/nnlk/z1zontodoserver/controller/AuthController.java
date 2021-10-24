@@ -1,13 +1,11 @@
 package com.nnlk.z1zontodoserver.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.nnlk.z1zontodoserver.common.CommonUtil;
 import com.nnlk.z1zontodoserver.dto.user.request.UserLoginDto;
 import com.nnlk.z1zontodoserver.dto.user.request.UserUpsertRequestDto;
 import com.nnlk.z1zontodoserver.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +15,6 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -27,10 +24,8 @@ import javax.validation.Valid;
 @Slf4j
 public class AuthController {
 
-    private final AuthService authService;
-    @Value("${uri.client}")
-    private String clientUri;
-    private final CommonUtil commonUtil;
+    private AuthService authService;
+
     /*
      * TODO Exception Refactoring
      * */
@@ -58,8 +53,7 @@ public class AuthController {
         HttpHeaders httpHeaders = new HttpHeaders();
         try {
             String jwtToken = authService.login(userLoginDto);
-            Cookie cookie = commonUtil.setJwtCookie(jwtToken);
-            response.addCookie(cookie);
+            httpHeaders.setBearerAuth(jwtToken);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<String>("password wrong", HttpStatus.BAD_REQUEST);
         } catch (DisabledException e) {
@@ -79,10 +73,11 @@ public class AuthController {
     public RedirectView githubCallback(String code, HttpServletResponse response) throws JsonProcessingException {
         log.debug("   ---> code = {}", code);
         String jwtToken = authService.getJwtByGithubCode(code);
-        Cookie cookie = commonUtil.setJwtCookie(jwtToken);
-        response.addCookie(cookie);
-        RedirectView redirectView = new RedirectView(clientUri);
+
+        RedirectView redirectView = new RedirectView();
+        redirectView.setHosts("http://127.0.0.1");
         redirectView.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
+        redirectView.setUrl("?bear="+jwtToken);
         return redirectView;
     }
 }
